@@ -1,0 +1,59 @@
+{
+  "name": "@stellar-scaffold/ui-react",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "npm start",
+    "prestart": "node scripts/prestart.mjs",
+    "start": "concurrently --kill-others-on-fail --names stellar,vite -c gray,green --pad-prefix \"stellar scaffold watch --build-clients\" \"vite\"",
+    "build": "tsc -b && vite build",
+    "install:contracts": "npm install --workspaces && npm run build --workspaces",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "format": "prettier . --write",
+    "prepare": "husky",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@creit.tech/stellar-wallets-kit": "^2.2.0",
+    "@stellar/stellar-sdk": "^15.1.0",
+    "@stellar/stellar-xdr-json": "^26.0.0",
+    "@tanstack/react-query": "^5.90.17",
+    "@theahaco/contract-explorer": "^1.1.0",
+    "@theahaco/ts-config": "^1.2.0",
+    "lossless-json": "^4.3.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-router-dom": "^7.12.0",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.24",
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.2.0",
+    "concurrently": "^9.2.1",
+    "dotenv": "^17.4.2",
+    "eslint": "^9.39.4",
+    "glob": "^13.0.6",
+    "globals": "^17.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.3",
+    "vite-plugin-node-polyfills": "^0.28.0",
+    "vite-plugin-wasm": "^3.6.0"
+  },
+  "lint-staged": {
+    "**/*": [
+      "eslint --fix --no-warn-ignored",
+      "prettier --write --ignore-unknown"
+    ]
+  },
+  "prettier": "@theahaco/ts-config/prettier",
+  "engines": {
+    "stellar-scaffold": ">=0.0.24"
+  }
+}

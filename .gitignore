@@ -35,14 +35,14 @@ lerna-debug.log*
 # macOS-specific files
 .DS_Store
 
-# generated contract clients
-packages/*
-# if you have other workspace packages, add them here
-!packages/.gitkeep
+# generated contract bindings
+bindings/*
+!bindings/.gitkeep
 
+# TODO: move these to /core/clients
 # generated contract client imports
-src/contracts/*
-!src/contracts/util.ts
+template/react/src/contracts/*
+!template/react/src/contracts/util.ts
 
 # Agent/editor scratch
 .claude/
