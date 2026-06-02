@@ -1,4 +1,3 @@
-import { Notification as StellarNotification } from "@stellar/design-system"
 import React, {
 	createContext,
 	useState,
@@ -6,7 +5,7 @@ import React, {
 	useMemo,
 	useCallback,
 } from "react"
-import "./NotificationProvider.css" // Import CSS for sliding effect
+import "./NotificationProvider.css"
 
 type NotificationType =
 	| "primary"
@@ -14,6 +13,7 @@ type NotificationType =
 	| "success"
 	| "error"
 	| "warning"
+
 interface Notification {
 	id: string
 	message: string
@@ -46,11 +46,11 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
 
 			setTimeout(() => {
 				setNotifications(markRead(newNotification.id))
-			}, 2500) // Start transition out after 2.5 seconds
+			}, 2500)
 
 			setTimeout(() => {
 				setNotifications(filterOut(newNotification.id))
-			}, 5000) // Remove after 5 seconds
+			}, 5000)
 		},
 		[],
 	)
@@ -64,12 +64,9 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
 				{notifications.map((notification) => (
 					<div
 						key={notification.id}
-						className={`notification ${notification.isVisible ? "slide-in" : "slide-out"}`}
+						className={`notification ${notification.isVisible ? "slide-in" : "slide-out"} notification-${notification.type}`}
 					>
-						<StellarNotification
-							title={notification.message}
-							variant={notification.type}
-						/>
+						{notification.message}
 					</div>
 				))}
 			</div>
@@ -81,17 +78,13 @@ function markRead(
 	id: Notification["id"],
 ): React.SetStateAction<Notification[]> {
 	return (prev) =>
-		prev.map((notification) =>
-			notification.id === id
-				? { ...notification, isVisible: true }
-				: notification,
-		)
+		prev.map((n) => (n.id === id ? { ...n, isVisible: false } : n))
 }
 
 function filterOut(
 	id: Notification["id"],
 ): React.SetStateAction<Notification[]> {
-	return (prev) => prev.filter((notification) => notification.id !== id)
+	return (prev) => prev.filter((n) => n.id !== id)
 }
 
 export { NotificationContext }

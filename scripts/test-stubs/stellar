@@ -1,0 +1,12 @@
+#!/bin/sh
+case "$*" in
+  "--version")
+    [ "${STUB_STELLAR_MISSING}" = "1" ] && exit 1 || exit 0
+    ;;
+  "scaffold --version")
+    [ "${STUB_SCAFFOLD_MISSING}" = "1" ] && exit 1 || exit 0
+    ;;
+  *)
+    exit 0
+    ;;
+esac

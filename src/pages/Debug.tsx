@@ -1,29 +1,18 @@
-import { Layout } from "@stellar/design-system"
-import { ContractExplorer, loadContracts } from "@theahaco/contract-explorer"
-import { network } from "../contracts/util"
-import { useWallet } from "../hooks/useWallet"
-
-// Import contract clients and load them for the Contract Explorer
-const contractModules = import.meta.glob("../contracts/*.ts")
-const contracts = await loadContracts(contractModules)
-
-const Debugger: React.FC = () => {
-	const { address, signTransaction } = useWallet()
-
+export default function Debug() {
 	return (
-		<Layout.Content>
-			<Layout.Inset>
-				<h2>Debug Contracts</h2>
-
-				<ContractExplorer
-					contracts={contracts}
-					network={network}
-					address={address}
-					signTransaction={signTransaction}
-				/>
-			</Layout.Inset>
-		</Layout.Content>
+		<div className="debug">
+			<h2>Contract Explorer</h2>
+			<p>
+				The Contract Explorer is being converted to a standalone Stellar Scaffold Extension that
+				runs in its own process. Once available, this page will link to it automatically.
+			</p>
+			<p>
+				In the meantime, use the{" "}
+				<a href="https://lab.stellar.org" target="_blank" rel="noreferrer">
+					Stellar Lab
+				</a>{" "}
+				to inspect transactions.
+			</p>
+		</div>
 	)
 }
-
-export default Debugger

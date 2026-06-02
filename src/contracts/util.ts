@@ -1,6 +1,15 @@
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit"
-import { type Network, type NetworkType } from "@theahaco/contract-explorer"
 import { z } from "zod"
+
+type NetworkType = "mainnet" | "testnet" | "futurenet" | "local"
+
+interface Network {
+	id: NetworkType
+	label: string
+	passphrase: string
+	rpcUrl: string
+	horizonUrl: string
+}
 
 const envSchema = z.object({
 	PUBLIC_STELLAR_NETWORK: z.enum([

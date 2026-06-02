@@ -1,5 +1,4 @@
-import { Button, Tooltip } from "@stellar/design-system"
-import React, { useState, useTransition } from "react"
+import React, { useTransition } from "react"
 import { useNotification } from "../hooks/useNotification.ts"
 import { useWallet } from "../hooks/useWallet.ts"
 import { getFriendbotUrl } from "../util/friendbot"
@@ -7,7 +6,6 @@ import { getFriendbotUrl } from "../util/friendbot"
 const FundAccountButton: React.FC = () => {
 	const { addNotification } = useNotification()
 	const [isPending, startTransition] = useTransition()
-	const [isTooltipVisible, setIsTooltipVisible] = useState(false)
 	const { address } = useWallet()
 
 	if (!address) return null
@@ -39,29 +37,13 @@ const FundAccountButton: React.FC = () => {
 	}
 
 	return (
-		<div
-			onMouseEnter={() => setIsTooltipVisible(true)}
-			onMouseLeave={() => setIsTooltipVisible(false)}
+		<button
+			disabled={isPending}
+			onClick={handleFundAccount}
+			title="Fund your account with test XLM via Friendbot"
 		>
-			<Tooltip
-				isVisible={isTooltipVisible}
-				isContrast
-				title="Fund Account"
-				placement="bottom"
-				triggerEl={
-					<Button
-						disabled={isPending}
-						onClick={handleFundAccount}
-						variant="primary"
-						size="md"
-					>
-						Fund Account
-					</Button>
-				}
-			>
-				<div style={{ width: "13em" }}>Account is already funded</div>
-			</Tooltip>
-		</div>
+			Fund Account
+		</button>
 	)
 }
 

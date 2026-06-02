@@ -1,23 +1,30 @@
-/* Override the global a[target]::after external 
-link icon that appeared on the warning sign */
-.learnMore[target]::after {
-	content: none;
-	display: none;
-}
-.learnMore {
-	color: var(--sds-clr-lilac-09, #606);
+.walletConnected {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
 }
 
-.warningIcon {
-	height: 20px;
-	width: 20px;
-	color: var(--color-yellow-60, #f0ad4e);
-	position: absolute;
-	bottom: -8px;
-	right: -8px;
-	cursor: pointer;
+.balance {
+	font-size: 0.875rem;
+	color: var(--color-text-muted);
 }
 
 .profileWrap {
 	position: relative;
+}
+
+.warningBadge {
+	position: absolute;
+	bottom: -6px;
+	right: -6px;
+	font-size: 11px;
+	cursor: help;
+	line-height: 1;
+	color: var(--color-warning);
+}
+
+.dialogActions {
+	display: flex;
+	gap: 8px;
 }

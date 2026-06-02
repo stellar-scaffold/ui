@@ -43,3 +43,6 @@ packages/*
 # generated contract client imports
 src/contracts/*
 !src/contracts/util.ts
+
+# Agent/editor scratch
+.claude/

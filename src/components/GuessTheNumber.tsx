@@ -1,4 +1,3 @@
-import { Button, Card, Code, Icon, Input } from "@stellar/design-system"
 import { useState } from "react"
 import game from "../contracts/guess_the_number"
 import { useWallet } from "../hooks/useWallet"
@@ -16,26 +15,21 @@ export const GuessTheNumber = () => {
 			return
 		}
 
-		// Get form data and validate
 		const guess = formData.get("guess")
 		if (typeof guess != "string" || !guess) {
 			setResult("failure")
 			return
 		}
 
-		// Reset any previous success value
 		setResult("loading")
 
-		// Create a transaction using the contract client
 		const tx = await game.guess(
 			{ a_number: BigInt(guess), guesser: address },
 			{ publicKey: address },
 		)
 
-		// Send the transaction to the current network
 		const { result } = await tx.signAndSend({ signTransaction })
 
-		// Handle result and update wallet balance
 		if (result.isErr()) {
 			console.error(result.unwrapErr())
 		} else {
@@ -49,42 +43,35 @@ export const GuessTheNumber = () => {
 	return (
 		<div className={styles.GuessTheNumber}>
 			<form action={submitGuess}>
-				<Input
+				<input
 					placeholder="Guess a number from 1 to 10!"
 					id="guess"
-					fieldSize="lg"
-					error={result === "failure"}
+					type="number"
+					min="1"
+					max="10"
 					onChange={reset}
 				/>
-
-				<Button
-					type="submit"
-					disabled={result === "loading"}
-					variant="primary"
-					size="lg"
-				>
+				<button type="submit" disabled={result === "loading"}>
 					Submit
-				</Button>
+				</button>
 			</form>
 
 			{result === "success" && (
-				<Card>
-					<Icon.CheckCircle className={styles.success} />
+				<div className={`card ${styles.result} ${styles.success}`}>
 					<p>
-						You got it! Play again by calling <Code size="md">reset</Code> in
-						the Contract Explorer.
+						You got it! Play again by calling <code>reset</code> in the
+						Contract Explorer.
 					</p>
-				</Card>
+				</div>
 			)}
-			{result == "failure" && (
-				<Card>
-					<Icon.XCircle className={styles.failure} />
+			{result === "failure" && (
+				<div className={`card ${styles.result} ${styles.failure}`}>
 					{!address ? (
 						<p>Connect to your wallet in order to guess.</p>
 					) : (
 						<p>Incorrect guess. Try again!</p>
 					)}
-				</Card>
+				</div>
 			)}
 		</div>
 	)

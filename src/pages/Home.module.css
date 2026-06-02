@@ -1,10 +1,9 @@
-/** HOME */
 .Home {
-	max-width: calc(var(--sds-window-width-max) * 0.75);
+	max-width: 900px;
 	margin: 0 auto;
 }
 
-.Home > div:nth-child(1) {
+.Home > div:first-child {
 	text-align: center;
 	margin: 4rem auto;
 	max-width: 560px;
@@ -14,49 +13,24 @@
 	font-weight: normal;
 }
 
-.Home :global(.Card) {
+.Home :global(.card) {
 	margin-bottom: 2rem;
 }
 
-:global(.sds-theme-light) .Home > div:nth-child(2) {
-	box-shadow: 2px 6px 20px -10px var(--sds-clr-gray-10);
-}
-:global(.sds-theme-dark) .Home > div:nth-child(2) {
-	background: var(--sds-clr-gray-02);
-	box-shadow: 2px 6px 20px -10px var(--sds-clr-gray-08);
+.contractNav {
+	display: flex;
+	gap: 1rem;
+	margin: 1rem 0;
+	flex-wrap: wrap;
 }
 
-.Home > div:nth-child(2) nav {
+.cards {
 	display: flex;
 	gap: 2rem;
-	margin: -1rem 0 1rem;
+	margin-bottom: 2rem;
 }
 
-h2 {
-	display: flex;
-	align-items: center;
-}
-h2 svg {
-	color: var(--sds-clr-gray-08);
-	display: inline-block;
-	width: 30px;
-	height: 30px;
-	margin-right: 0.4rem;
-}
-
-section {
-	display: flex;
-	flex-direction: row;
-	gap: 2rem;
-	text-align: center;
-}
-
-section svg {
-	display: block;
-	width: 30px;
-	height: 30px;
-	background: var(--sds-clr-lilac-06);
-	border-radius: 50%;
-	margin: 0 auto 1rem;
-	padding: 5px;
+.cards :global(.card) {
+	flex: 1;
+	margin-bottom: 0;
 }

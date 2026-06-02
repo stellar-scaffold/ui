@@ -1,29 +1,32 @@
-/** GuessTheNumber */
 .GuessTheNumber {
 	margin-bottom: 2rem;
 }
 
 .GuessTheNumber form {
 	display: flex;
-	gap: 2rem;
-	flex-direction: row;
+	gap: 1rem;
 	align-items: stretch;
+	margin-bottom: 1rem;
 }
 
-.GuessTheNumber :global(.Card) {
+.GuessTheNumber form input {
+	flex: 1;
+}
+
+.result {
 	padding: 0.5rem 1rem;
-	display: flex;
-	align-items: center;
 }
 
-.GuessTheNumber svg {
-	margin-right: 0.5rem;
-	width: 1.2rem;
-	height: 1.2rem;
+.result p {
+	margin: 0;
 }
-.failure {
-	color: var(--sds-clr-red-11);
-}
+
 .success {
-	color: var(--sds-clr-green-11);
+	border-color: var(--color-success);
+	color: var(--color-success);
+}
+
+.failure {
+	border-color: var(--color-error);
+	color: var(--color-error);
 }

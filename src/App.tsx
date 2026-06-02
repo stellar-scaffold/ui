@@ -1,5 +1,4 @@
-import { Button, Icon, Layout } from "@stellar/design-system"
-import { Routes, Route, Outlet, NavLink } from "react-router-dom"
+import { NavLink, Outlet, Route, Routes } from "react-router-dom"
 import styles from "./App.module.css"
 import ConnectAccount from "./components/ConnectAccount"
 import { labPrefix } from "./contracts/util"
@@ -18,66 +17,53 @@ function App() {
 	)
 }
 
-const AppLayout: React.FC = () => (
+const AppLayout = () => (
 	<div className={styles.AppLayout}>
-		<Layout.Header
-			projectId="Scaffold"
-			projectTitle="Scaffold"
-			hasThemeSwitch={true}
-			contentCenter={
-				<>
-					<NavLink to="/debug">
-						{({ isActive }) => (
-							<Button variant="tertiary" size="md" disabled={isActive}>
-								<Icon.Code02 size="md" />
-								Contract Explorer
-							</Button>
-						)}
-					</NavLink>
-					<NavLink to={labPrefix()}>
-						<Button variant="tertiary" size="md">
-							<Icon.SearchMd size="md" />
-							Transaction Explorer
-						</Button>
-					</NavLink>
-				</>
-			}
-			contentRight={<ConnectAccount />}
-		/>
+		<header className={styles.header}>
+			<span className={styles.logo}>Scaffold</span>
+			<nav className={styles.headerNav}>
+				<NavLink
+					to="/debug"
+					className={({ isActive }) => (isActive ? styles.active : "")}
+				>
+					Contract Explorer
+				</NavLink>
+				<a href={labPrefix()} target="_blank" rel="noreferrer">
+					Transaction Explorer
+				</a>
+			</nav>
+			<ConnectAccount />
+		</header>
 
-		<main>
-			<Layout.Content>
-				<Layout.Inset>
-					<Outlet />
-				</Layout.Inset>
-			</Layout.Content>
+		<main className={styles.main}>
+			<Outlet />
 		</main>
 
-		<Layout.Footer>
-			<nav>
+		<footer className={styles.footer}>
+			<nav className={styles.footerNav}>
 				<a
-					href="https://github.com/theahaco/scaffold-stellar"
-					className="Link Link--secondary"
+					href="https://github.com/stellar-scaffold/cli"
 					target="_blank"
+					rel="noreferrer"
 				>
-					<Icon.GitPullRequest size="sm" /> GitHub
+					GitHub
 				</a>
 				<a
 					href="https://www.youtube.com/watch?v=0syGaIn3ULk&list=PLmr3tp_7-7Gjj6gn5-bBn-QTMyaWzwOU5"
-					className="Link Link--secondary"
 					target="_blank"
+					rel="noreferrer"
 				>
-					<Icon.Youtube size="sm" /> Tutorial
+					Tutorial
 				</a>
 				<a
 					href="https://scaffoldstellar.org"
-					className="Link Link--secondary"
 					target="_blank"
+					rel="noreferrer"
 				>
-					<Icon.BookOpen01 size="sm" /> View docs
+					View docs
 				</a>
 			</nav>
-		</Layout.Footer>
+		</footer>
 	</div>
 )
 
