@@ -39,8 +39,10 @@ lerna-debug.log*
 bindings/*
 !bindings/.gitkeep
 
-# TODO: move these to /core/clients
 # generated contract client imports
+core/clients/*
+!core/clients/.gitkeep
+!core/clients/util.ts
 template/react/src/contracts/*
 !template/react/src/contracts/util.ts
 
