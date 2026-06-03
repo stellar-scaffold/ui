@@ -8,6 +8,8 @@ import { Horizon } from "@stellar/stellar-sdk"
 import { networkPassphrase, stellarNetwork } from "../contracts/util"
 import storage from "./storage"
 
+// AUDIT(ui-core): instantiate StellarWalletsKit once in @stellar-scaffold/ui-core
+// and import the instance here; today each template builds its own.
 const kit: StellarWalletsKit = new StellarWalletsKit({
 	network: networkPassphrase as WalletNetwork,
 	modules: allowAllModules(),

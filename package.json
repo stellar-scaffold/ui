@@ -5,6 +5,7 @@
   "workspaces": [
     "templates/*",
     "bindings/*",
-    "core"
+    "core",
+    "e2e"
   ]
 }

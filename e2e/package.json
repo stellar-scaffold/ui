@@ -1,0 +1,13 @@
+{
+  "name": "@stellar-scaffold/ui-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Playwright UI-smoke parity tests run against every framework template.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}
