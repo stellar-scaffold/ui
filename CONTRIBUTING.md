@@ -1,50 +1,63 @@
 # Contributing
 
-This is a guide to contributing to `frontend-react` itself. Feel free
-to delete or modify it for your own project.
+This is the **Stellar Scaffold UI monorepo** — the source for the official
+frontend templates. `stellar scaffold init` instantiates it into a single-app
+project; this guide is for contributors working on the monorepo itself, not for
+users of a scaffolded project.
 
-## Prestart script
+## Layout
 
-`scripts/prestart.mjs` runs on `npm start` for first-time users. It checks for
-required CLIs, offers to install them, and runs `stellar scaffold setup`. Once
-setup completes it removes itself from `package.json`.
+| Path | What it is |
+|------|-----------|
+| `templates/<framework>/` | Per-framework starter apps (React, Svelte, …) |
+| `core/` | `@stellar-scaffold/ui-core` — shared, framework-agnostic layer (util, env reader, display/business helpers, `styles.css`) plus the generated `core/clients/` |
+| `bindings/` | CLI-generated Contract Bindings |
+| `contracts/` | Example Soroban contracts (Tutorial + vendored OpenZeppelin) |
+| `e2e/` | Playwright parity + visual suite |
 
-### Testing
+`init` keeps `app/` + `core/` + `bindings/` + `contracts/` and removes the
+contributor-only `templates/` and `e2e/`.
 
-The test harness is contributor-only and is removed from user repos when setup
-completes (along with the stubs directory).
+## Developing a template in place
 
-**Run the tests:**
+There is no single app to run at the monorepo root — `npm start` there just
+signposts (see `scripts/dev-guard.mjs`). Run a specific template instead:
 
 ```bash
-bash scripts/test-prestart.sh
+npm install                            # once, at the root (workspaces)
+npm start --workspace templates/react
+npm start --workspace templates/svelte
 ```
 
-No dependencies beyond Node.js and bash.
+Each runs `stellar scaffold watch --build-clients` alongside the dev server, so
+you need the **Stellar CLI** and **Stellar Scaffold CLI** installed (the root
+`npm start` prints install instructions if either is missing).
 
-**How it works:**
+Shared code lives in `core/`; changes there are picked up by every template via
+the `@stellar-scaffold/ui-core` workspace package. Keep framework-specific code
+(providers/stores, UI components) in the templates.
 
-- `scripts/test-stubs/` contains fake binaries placed at the front of `PATH`
-- `stellar` stub reads `STUB_STELLAR_MISSING` / `STUB_SCAFFOLD_MISSING` env vars to simulate missing tools
-- `cargo` stub always exits 0 (simulates a successful install)
-- `cargo-binstall` stub always exits 1 (forces the `cargo install` path for determinism)
-- `PRESTART_FORCE_TTY=1` overrides the TTY check so interactive paths can be tested without a real terminal
+## Tests
 
-**Adding a test case:**
+The `e2e/` Playwright suite runs the **same specs against every framework**, so a
+feature that works in React but not Svelte (or vice versa) fails the build — this
+is how parity between templates is enforced.
 
-Call `run_test` in `test-prestart.sh` with:
-
+```bash
+npm test --workspace e2e               # or: cd e2e && npx playwright test
 ```
-run_test "<name>" <expected_exit> "<expected_output_substring>" "<stdin_input>" [ENV=val ...]
-```
 
-### What gets cleaned up on setup
+- **Smoke parity** (`smoke.spec.ts`) — framework-agnostic assertions: app mounts,
+  wallet Connect button, Contract Explorer link, GuessTheNumber form.
+- **Visual regression** (`visual.spec.ts`) — per-framework screenshot baselines.
+  An intended visual change is reviewed and re-baselined:
 
-When a user completes setup, `markSetupComplete()` in `prestart.mjs`:
+  ```bash
+  cd e2e && npx playwright test --update-snapshots
+  ```
 
-1. Removes the `prestart` key from `package.json`
-2. Deletes `scripts/test-stubs/`
-3. Deletes `scripts/test-prestart.sh`
+  Baselines are committed and platform-specific (`*-darwin.png` locally; CI on
+  Linux needs its own set).
 
-Contributors always have these files because they run from a branch where setup
-has never been run.
+`e2e/playwright.config.ts` self-adapts: it targets every `templates/<framework>/`
+in the monorepo, and the single `app/` after `init`.
