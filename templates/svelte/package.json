@@ -5,10 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "npm start",
-    "prestart": "node scripts/prestart.mjs",
     "start": "concurrently --kill-others-on-fail --names stellar,vite -c gray,green --pad-prefix \"stellar scaffold watch --build-clients\" \"vite dev\"",
     "build": "svelte-kit sync && vite build",
-    "install:contracts": "npm install --workspaces && npm run build --workspaces",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier . --write",
