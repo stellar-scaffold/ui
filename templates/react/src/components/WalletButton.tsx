@@ -5,7 +5,6 @@ import {
 } from "@stellar-scaffold/ui-core"
 import { useRef } from "react"
 import { useWallet } from "../hooks/useWallet"
-import styles from "./WalletButton.module.css"
 
 export const WalletButton = () => {
 	const dialogRef = useRef<HTMLDialogElement>(null)
@@ -20,21 +19,18 @@ export const WalletButton = () => {
 	}
 
 	return (
-		<div
-			className={styles.walletConnected}
-			style={{ opacity: isPending ? 0.6 : 1 }}
-		>
-			<span className={styles.balance}>
+		<div className="wallet-connected" style={{ opacity: isPending ? 0.6 : 1 }}>
+			<span className="wallet-balance">
 				{balances?.xlm?.balance ?? "-"} XLM
 			</span>
 
-			<div className={styles.profileWrap}>
+			<div className="wallet-profile">
 				<button onClick={() => dialogRef.current?.showModal()}>
 					{shortAddress(address)}
 				</button>
 				{walletWarnings.hasWarnings && (
 					<span
-						className={styles.warningBadge}
+						className="wallet-warning-badge"
 						title={
 							walletWarnings.messages.join("") +
 							(walletWarnings.helpUrl
@@ -48,14 +44,11 @@ export const WalletButton = () => {
 			</div>
 
 			<dialog ref={dialogRef}>
-				<h3 style={{ margin: "0 0 0.75rem" }}>Disconnect wallet?</h3>
-				<p style={{ margin: "0 0 1rem", fontSize: "0.875rem" }}>
-					Connected as{" "}
-					<code title={address} style={{ wordBreak: "break-all" }}>
-						{address}
-					</code>
+				<h3>Disconnect wallet?</h3>
+				<p>
+					Connected as <code title={address}>{address}</code>
 				</p>
-				<div className={styles.dialogActions}>
+				<div className="dialog-actions">
 					<button
 						onClick={() =>
 							void disconnectWallet().then(() => dialogRef.current?.close())

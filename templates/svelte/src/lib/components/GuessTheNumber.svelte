@@ -54,14 +54,14 @@
 	</form>
 
 	{#if result === "success"}
-		<div class="card result success">
+		<div class="card guess-result guess-result--success">
 			<p>
 				You got it! Play again by calling <code>reset</code> in the Contract Explorer.
 			</p>
 		</div>
 	{/if}
 	{#if result === "failure"}
-		<div class="card result failure">
+		<div class="card guess-result guess-result--failure">
 			{#if !$address}
 				<p>Connect to your wallet in order to guess.</p>
 			{:else}
@@ -70,38 +70,3 @@
 		</div>
 	{/if}
 </div>
-
-<style>
-	.guess-the-number {
-		margin-bottom: 2rem;
-	}
-
-	form {
-		display: flex;
-		gap: 1rem;
-		align-items: stretch;
-		margin-bottom: 1rem;
-	}
-
-	form input {
-		flex: 1;
-	}
-
-	.result {
-		padding: 0.5rem 1rem;
-	}
-
-	.result p {
-		margin: 0;
-	}
-
-	.success {
-		border-color: var(--color-success);
-		color: var(--color-success);
-	}
-
-	.failure {
-		border-color: var(--color-error);
-		color: var(--color-error);
-	}
-</style>

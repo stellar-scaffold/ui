@@ -12,12 +12,3 @@
 	{/if}
 	<WalletButton />
 </div>
-
-<style>
-	.connect-account {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		gap: 10px;
-	}
-</style>

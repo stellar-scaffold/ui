@@ -6,15 +6,7 @@ import { WalletButton } from "./WalletButton"
 
 const ConnectAccount: React.FC = () => {
 	return (
-		<div
-			style={{
-				display: "flex",
-				flexDirection: "row",
-				alignItems: "center",
-				gap: "10px",
-				verticalAlign: "middle",
-			}}
-		>
+		<div className="connect-account">
 			<NetworkPill />
 			{stellarNetwork !== "PUBLIC" && <FundAccountButton />}
 			<WalletButton />

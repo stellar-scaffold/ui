@@ -1,7 +1,6 @@
 import { useState } from "react"
 import game from "../contracts/guess_the_number"
 import { useWallet } from "../hooks/useWallet"
-import styles from "./GuessTheNumber.module.css"
 
 export const GuessTheNumber = () => {
 	const { address, updateBalances, signTransaction } = useWallet()
@@ -41,7 +40,7 @@ export const GuessTheNumber = () => {
 	const reset = () => setResult("idle")
 
 	return (
-		<div className={styles.GuessTheNumber}>
+		<div className="guess-the-number">
 			<form action={submitGuess}>
 				<input
 					placeholder="Guess a number from 1 to 10!"
@@ -57,15 +56,15 @@ export const GuessTheNumber = () => {
 			</form>
 
 			{result === "success" && (
-				<div className={`card ${styles.result} ${styles.success}`}>
+				<div className="card guess-result guess-result--success">
 					<p>
-						You got it! Play again by calling <code>reset</code> in the
-						Contract Explorer.
+						You got it! Play again by calling <code>reset</code> in the Contract
+						Explorer.
 					</p>
 				</div>
 			)}
 			{result === "failure" && (
-				<div className={`card ${styles.result} ${styles.failure}`}>
+				<div className="card guess-result guess-result--failure">
 					{!address ? (
 						<p>Connect to your wallet in order to guess.</p>
 					) : (

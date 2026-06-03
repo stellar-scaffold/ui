@@ -103,3 +103,129 @@ dialog {
 dialog::backdrop {
 	background: rgba(0, 0, 0, 0.4);
 }
+
+/* ── Shared component classes ───────────────────────────────────────────────
+   Used identically by every framework template, so a component looks the same
+   in React and Svelte. The matching markup uses these classnames. */
+
+/* NetworkPill */
+.network-pill {
+	background-color: #f0f2f5;
+	color: #4a5362;
+	padding: 4px 10px;
+	border-radius: 16px;
+	font-size: 12px;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.network-pill--mismatch {
+	cursor: help;
+}
+
+.network-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	display: inline-block;
+}
+
+.network-dot--ok {
+	background-color: #2ed06e;
+}
+
+.network-dot--mismatch {
+	background-color: #ff3b30;
+}
+
+.network-dot--disconnected {
+	background-color: #c1c7d0;
+}
+
+/* ConnectAccount */
+.connect-account {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+/* WalletButton */
+.wallet-connected {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.wallet-balance {
+	font-size: 0.875rem;
+	color: var(--color-text-muted);
+}
+
+.wallet-profile {
+	position: relative;
+}
+
+.wallet-warning-badge {
+	position: absolute;
+	bottom: -6px;
+	right: -6px;
+	font-size: 11px;
+	cursor: help;
+	line-height: 1;
+	color: var(--color-warning);
+}
+
+.dialog-actions {
+	display: flex;
+	gap: 8px;
+}
+
+dialog h3 {
+	margin: 0 0 0.75rem;
+}
+
+dialog p {
+	margin: 0 0 1rem;
+	font-size: 0.875rem;
+}
+
+dialog code {
+	word-break: break-all;
+}
+
+/* GuessTheNumber */
+.guess-the-number {
+	margin-bottom: 2rem;
+}
+
+.guess-the-number form {
+	display: flex;
+	gap: 1rem;
+	align-items: stretch;
+	margin-bottom: 1rem;
+}
+
+.guess-the-number form input {
+	flex: 1;
+}
+
+.guess-result {
+	padding: 0.5rem 1rem;
+}
+
+.guess-result p {
+	margin: 0;
+}
+
+.guess-result--success {
+	border-color: var(--color-success);
+	color: var(--color-success);
+}
+
+.guess-result--failure {
+	border-color: var(--color-error);
+	color: var(--color-error);
+}

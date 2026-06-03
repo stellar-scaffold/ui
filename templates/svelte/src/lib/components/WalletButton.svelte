@@ -15,15 +15,15 @@
 	</button>
 {:else}
 	<div class="wallet-connected" style:opacity={$isPending ? 0.6 : 1}>
-		<span class="balance">{$balances?.xlm?.balance ?? "-"} XLM</span>
+		<span class="wallet-balance">{$balances?.xlm?.balance ?? "-"} XLM</span>
 
-		<div class="profile-wrap">
+		<div class="wallet-profile">
 			<button onclick={() => dialog.showModal()}>
 				{shortAddress($address)}
 			</button>
 			{#if $walletWarnings.hasWarnings}
 				<span
-					class="warning-badge"
+					class="wallet-warning-badge"
 					title={$walletWarnings.messages.join("") +
 						($walletWarnings.helpUrl ? ` Learn more: ${$walletWarnings.helpUrl}` : "")}
 				>⚠</span>
@@ -48,52 +48,3 @@
 		</dialog>
 	</div>
 {/if}
-
-<style>
-	.wallet-connected {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.balance {
-		font-size: 0.875rem;
-		color: var(--color-text-muted);
-	}
-
-	.profile-wrap {
-		position: relative;
-	}
-
-	.warning-badge {
-		position: absolute;
-		bottom: -6px;
-		right: -6px;
-		font-size: 11px;
-		cursor: help;
-		line-height: 1;
-		color: var(--color-warning);
-	}
-
-	dialog {
-		width: 100%;
-	}
-
-	dialog h3 {
-		margin: 0 0 0.75rem;
-	}
-
-	dialog p {
-		margin: 0 0 1rem;
-		font-size: 0.875rem;
-	}
-
-	dialog code {
-		word-break: break-all;
-	}
-
-	.dialog-actions {
-		display: flex;
-		gap: 8px;
-	}
-</style>
