@@ -50,8 +50,8 @@ jobs:
         run: |
           mkdir -p .config/stellar/identity
           echo 'secret_key = "SC5O7VZUXDJ6JBDSZ74DSERXL7W3Y5LTOAMRF7RQRL3TAGAPS7LUVG3L"' > .config/stellar/identity/me.toml
-      - run: npm ci
-      - run: npm run lint
+      - run: npm ci --legacy-peer-deps
+      - run: npm run lint --workspaces --if-present
       - run: npx prettier . --check
       - name: Build with Scaffold and build client packages
         run:
@@ -70,7 +70,10 @@ jobs:
             echo "Check the \"Build with Scaffold\" step logs."
             exit 1
           fi
-      - run: npm run install:contracts
-      - run: npm run build
-      - name: Run tests
-        run: npm test --if-present
+      - run: npm run build --workspaces --if-present
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - name: Run cross-framework parity smoke tests
+        run: npx playwright test tests/smoke.spec.ts
+        working-directory: e2e
