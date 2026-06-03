@@ -1,5 +1,5 @@
+import game from "@stellar-scaffold/ui-core/clients/guess_the_number"
 import { useState } from "react"
-import game from "../contracts/guess_the_number"
 import { useWallet } from "../hooks/useWallet"
 
 export const GuessTheNumber = () => {

@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
-    "./styles.css": "./styles.css"
+    "./styles.css": "./styles.css",
+    "./clients/*": "./clients/*.ts"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^1.9.5",

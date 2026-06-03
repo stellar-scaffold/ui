@@ -4,13 +4,7 @@ import globals from "globals"
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
-	globalIgnores([
-		"dist",
-		"packages",
-		"target/packages",
-		"src/contracts/*",
-		"!src/contracts/util.ts",
-	]),
+	globalIgnores(["dist"]),
 	...config,
 	{
 		files: ["**/*.{ts,tsx}"],

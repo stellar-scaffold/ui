@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fundAccount } from "@stellar-scaffold/ui-core"
-	import { address } from "../stores/wallet"
 	import { addNotification } from "../stores/notifications"
+	import { address } from "../stores/wallet"
 
 	let isPending = $state(false)
 

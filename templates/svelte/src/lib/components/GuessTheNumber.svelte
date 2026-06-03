@@ -1,5 +1,5 @@
 <script lang="ts">
-	import game from "../contracts/guess_the_number"
+	import game from "@stellar-scaffold/ui-core/clients/guess_the_number"
 	import { address, signTransaction, updateBalances } from "../stores/wallet"
 
 	let result = $state<"idle" | "loading" | "success" | "failure">("idle")
