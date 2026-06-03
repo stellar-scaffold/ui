@@ -1,30 +1,18 @@
-import { stellarNetwork } from "@stellar-scaffold/ui-core"
+import { networkStatus } from "@stellar-scaffold/ui-core"
 import React from "react"
 import { useWallet } from "../hooks/useWallet"
 
-// TODO: workaround until @creit-tech/stellar-wallets-kit uses the new name for local network
-const formatNetworkName = (name: string) =>
-	name === "STANDALONE"
-		? "Local"
-		: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
-
-const appNetwork = formatNetworkName(stellarNetwork)
+const DOT_COLOR = {
+	ok: "#2ED06E",
+	mismatch: "#FF3B30",
+	disconnected: "#C1C7D0",
+} as const
 
 const NetworkPill: React.FC = () => {
 	const { network, address } = useWallet()
-
-	const walletNetwork = formatNetworkName(network ?? "")
-	const isNetworkMismatch = walletNetwork !== appNetwork
-
-	let title = ""
-	let dotColor = "#2ED06E"
-	if (!address) {
-		title = "Connect your wallet using this network."
-		dotColor = "#C1C7D0"
-	} else if (isNetworkMismatch) {
-		title = `Wallet is on ${walletNetwork}, connect to ${appNetwork} instead.`
-		dotColor = "#FF3B30"
-	}
+	const { appNetwork, state, title } = networkStatus(address, network)
+	const isNetworkMismatch = state === "mismatch"
+	const dotColor = DOT_COLOR[state]
 
 	return (
 		<div

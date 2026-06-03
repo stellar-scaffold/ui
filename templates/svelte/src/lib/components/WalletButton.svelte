@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { connectWallet, disconnectWallet } from "@stellar-scaffold/ui-core"
+	import {
+		connectWallet,
+		disconnectWallet,
+		shortAddress,
+	} from "@stellar-scaffold/ui-core"
 	import { address, balances, isPending, walletWarnings } from "../stores/wallet"
 
 	let dialog = $state<HTMLDialogElement>(null!)
-
-	const shortAddress = (addr: string) => `${addr.slice(0, 4)}...${addr.slice(-4)}`
 </script>
 
 {#if !$address}

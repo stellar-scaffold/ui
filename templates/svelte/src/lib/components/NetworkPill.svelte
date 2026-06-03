@@ -1,34 +1,24 @@
 <script lang="ts">
-	import { stellarNetwork } from "@stellar-scaffold/ui-core"
+	import { networkStatus } from "@stellar-scaffold/ui-core"
 	import { address, network } from "../stores/wallet"
 
-	// TODO: workaround until @creit-tech/stellar-wallets-kit uses the new name for local network
-	const formatNetworkName = (name: string) =>
-		name === "STANDALONE"
-			? "Local"
-			: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
+	const DOT_COLOR = {
+		ok: "#2ED06E",
+		mismatch: "#FF3B30",
+		disconnected: "#C1C7D0",
+	} as const
 
-	const appNetwork = formatNetworkName(stellarNetwork)
-
-	const walletNetwork = $derived(formatNetworkName($network ?? ""))
-	const isNetworkMismatch = $derived(walletNetwork !== appNetwork)
-	const dotColor = $derived(!$address ? "#C1C7D0" : isNetworkMismatch ? "#FF3B30" : "#2ED06E")
-	const title = $derived(
-		!$address
-			? "Connect your wallet using this network."
-			: isNetworkMismatch
-				? `Wallet is on ${walletNetwork}, connect to ${appNetwork} instead.`
-				: "",
-	)
+	const status = $derived(networkStatus($address, $network))
+	const dotColor = $derived(DOT_COLOR[status.state])
 </script>
 
 <div
 	class="pill"
-	style:cursor={isNetworkMismatch ? "help" : "default"}
-	{title}
+	style:cursor={status.state === "mismatch" ? "help" : "default"}
+	title={status.title}
 >
 	<span class="dot" style:background-color={dotColor}></span>
-	{appNetwork}
+	{status.appNetwork}
 </div>
 
 <style>

@@ -1,9 +1,11 @@
-import { connectWallet, disconnectWallet } from "@stellar-scaffold/ui-core"
+import {
+	connectWallet,
+	disconnectWallet,
+	shortAddress,
+} from "@stellar-scaffold/ui-core"
 import { useRef } from "react"
 import { useWallet } from "../hooks/useWallet"
 import styles from "./WalletButton.module.css"
-
-const shortAddress = (addr: string) => `${addr.slice(0, 4)}...${addr.slice(-4)}`
 
 export const WalletButton = () => {
 	const dialogRef = useRef<HTMLDialogElement>(null)

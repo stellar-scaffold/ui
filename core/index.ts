@@ -4,7 +4,7 @@
 // components) stays in each template.
 
 export * from "./env" // rpcUrl, networkPassphrase, stellarNetwork, horizonUrl, network, labPrefix
-export * from "./contract" // shortenContractId
+export * from "./format" // shortAddress, formatNetworkName, networkStatus, NetworkState
 export * from "./friendbot" // getFriendbotUrl
 export * from "./subscription" // subscribeToEvents
 export * from "./wallet" // connectWallet, disconnectWallet, fetchBalances, wallet, MappedBalances
