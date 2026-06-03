@@ -57,7 +57,9 @@ function toolInstructions() {
 if (existsSync(resolve(root, "app"))) {
 	const tools = toolInstructions()
 	if (!tools) process.exit(0)
-	console.error(`\nCannot start — install the required Stellar tools first:${tools}\n`)
+	console.error(
+		`\nCannot start — install the required Stellar tools first:${tools}\n`,
+	)
 	process.exit(1)
 }
 

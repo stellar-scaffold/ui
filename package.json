@@ -12,5 +12,6 @@
     "bindings/*",
     "core",
     "e2e"
-  ]
+  ],
+  "prettier": "@theahaco/ts-config/prettier"
 }

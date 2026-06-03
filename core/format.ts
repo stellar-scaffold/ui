@@ -20,7 +20,12 @@ export type NetworkState = "disconnected" | "mismatch" | "ok"
 export function networkStatus(
 	address: string | null | undefined,
 	walletNetworkRaw: string | null | undefined,
-): { appNetwork: string; walletNetwork: string; state: NetworkState; title: string } {
+): {
+	appNetwork: string
+	walletNetwork: string
+	state: NetworkState
+	title: string
+} {
 	const appNetwork = formatNetworkName(stellarNetwork)
 	const walletNetwork = formatNetworkName(walletNetworkRaw ?? "")
 

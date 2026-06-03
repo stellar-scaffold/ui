@@ -7,13 +7,13 @@ users of a scaffolded project.
 
 ## Layout
 
-| Path | What it is |
-|------|-----------|
-| `templates/<framework>/` | Per-framework starter apps (React, Svelte, …) |
-| `core/` | `@stellar-scaffold/ui-core` — shared, framework-agnostic layer (util, env reader, display/business helpers, `styles.css`) plus the generated `core/clients/` |
-| `bindings/` | CLI-generated Contract Bindings |
-| `contracts/` | Example Soroban contracts (Tutorial + vendored OpenZeppelin) |
-| `e2e/` | Playwright parity + visual suite |
+| Path                     | What it is                                                                                                                                                   |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `templates/<framework>/` | Per-framework starter apps (React, Svelte, …)                                                                                                                |
+| `core/`                  | `@stellar-scaffold/ui-core` — shared, framework-agnostic layer (util, env reader, display/business helpers, `styles.css`) plus the generated `core/clients/` |
+| `bindings/`              | CLI-generated Contract Bindings                                                                                                                              |
+| `contracts/`             | Example Soroban contracts (Tutorial + vendored OpenZeppelin)                                                                                                 |
+| `e2e/`                   | Playwright parity + visual suite                                                                                                                             |
 
 `init` keeps `app/` + `core/` + `bindings/` + `contracts/` and removes the
 contributor-only `templates/` and `e2e/`.
@@ -39,16 +39,16 @@ the `@stellar-scaffold/ui-core` workspace package. Keep framework-specific code
 
 ## Tests
 
-The `e2e/` Playwright suite runs the **same specs against every framework**, so a
-feature that works in React but not Svelte (or vice versa) fails the build — this
-is how parity between templates is enforced.
+The `e2e/` Playwright suite runs the **same specs against every framework**, so
+a feature that works in React but not Svelte (or vice versa) fails the build —
+this is how parity between templates is enforced.
 
 ```bash
 npm test --workspace e2e               # or: cd e2e && npx playwright test
 ```
 
-- **Smoke parity** (`smoke.spec.ts`) — framework-agnostic assertions: app mounts,
-  wallet Connect button, Contract Explorer link, GuessTheNumber form.
+- **Smoke parity** (`smoke.spec.ts`) — framework-agnostic assertions: app
+  mounts, wallet Connect button, Contract Explorer link, GuessTheNumber form.
 - **Visual regression** (`visual.spec.ts`) — per-framework screenshot baselines.
   An intended visual change is reviewed and re-baselined:
 
@@ -59,5 +59,5 @@ npm test --workspace e2e               # or: cd e2e && npx playwright test
   Baselines are committed and platform-specific (`*-darwin.png` locally; CI on
   Linux needs its own set).
 
-`e2e/playwright.config.ts` self-adapts: it targets every `templates/<framework>/`
-in the monorepo, and the single `app/` after `init`.
+`e2e/playwright.config.ts` self-adapts: it targets every
+`templates/<framework>/` in the monorepo, and the single `app/` after `init`.

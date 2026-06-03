@@ -80,7 +80,10 @@ export function subscribeToEvents(
 					try {
 						onEvent(event)
 					} catch (error) {
-						console.error("Poll Events: subscription callback had error: ", error)
+						console.error(
+							"Poll Events: subscription callback had error: ",
+							error,
+						)
 					}
 				})
 				if (response.cursor) {

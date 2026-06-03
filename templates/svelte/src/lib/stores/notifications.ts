@@ -1,6 +1,11 @@
 import { writable } from "svelte/store"
 
-type NotificationType = "primary" | "secondary" | "success" | "error" | "warning"
+type NotificationType =
+	| "primary"
+	| "secondary"
+	| "success"
+	| "error"
+	| "warning"
 
 interface Notification {
 	id: string
@@ -14,7 +19,10 @@ export const notifications = { subscribe: _notifications.subscribe }
 
 export function addNotification(message: string, type: NotificationType) {
 	const id = `${type}-${Date.now().toString()}`
-	_notifications.update((prev) => [...prev, { id, message, type, isVisible: true }])
+	_notifications.update((prev) => [
+		...prev,
+		{ id, message, type, isVisible: true },
+	])
 
 	setTimeout(() => {
 		_notifications.update((prev) =>
