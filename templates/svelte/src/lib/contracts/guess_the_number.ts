@@ -1,10 +1,10 @@
-import * as Client from 'guess_the_number';
-import { rpcUrl } from './util';
+import { rpcUrl } from "@stellar-scaffold/ui-core"
+import * as Client from "guess_the_number"
 
 export default new Client.Client({
-  networkPassphrase: 'Standalone Network ; February 2017',
-  contractId: 'CAKMBRBFI3SGC73F7TTG6NBDZH6DJVOTXSGKUWSHMYJVGWCTX55MZ7TC',
-  rpcUrl,
-  allowHttp: true,
-  publicKey: undefined,
-});
+	networkPassphrase: "Standalone Network ; February 2017",
+	contractId: "CAKMBRBFI3SGC73F7TTG6NBDZH6DJVOTXSGKUWSHMYJVGWCTX55MZ7TC",
+	rpcUrl,
+	allowHttp: true,
+	publicKey: undefined,
+})

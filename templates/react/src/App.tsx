@@ -1,7 +1,7 @@
+import { labPrefix } from "@stellar-scaffold/ui-core"
 import { NavLink, Outlet, Route, Routes } from "react-router-dom"
 import styles from "./App.module.css"
 import ConnectAccount from "./components/ConnectAccount"
-import { labPrefix } from "./contracts/util"
 import Debug from "./pages/Debug"
 import Home from "./pages/Home"
 
@@ -55,11 +55,7 @@ const AppLayout = () => (
 				>
 					Tutorial
 				</a>
-				<a
-					href="https://scaffoldstellar.org"
-					target="_blank"
-					rel="noreferrer"
-				>
+				<a href="https://scaffoldstellar.org" target="_blank" rel="noreferrer">
 					View docs
 				</a>
 			</nav>

@@ -1,4 +1,10 @@
 import {
+	storage,
+	wallet,
+	fetchBalances,
+	type MappedBalances,
+} from "@stellar-scaffold/ui-core"
+import {
 	createContext,
 	useCallback,
 	useEffect,
@@ -7,8 +13,6 @@ import {
 	useState,
 	useTransition,
 } from "react"
-import storage from "../util/storage"
-import { wallet, fetchBalances, type MappedBalances } from "../util/wallet"
 
 const signTransaction = wallet.signTransaction.bind(wallet)
 

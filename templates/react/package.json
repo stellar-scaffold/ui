@@ -16,17 +16,14 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@creit.tech/stellar-wallets-kit": "^1.9.5",
-    "@stellar/stellar-sdk": "^15.1.0",
-    "@stellar/stellar-xdr-json": "^26.0.0",
+    "@stellar-scaffold/ui-core": "*",
     "@tanstack/react-query": "^5.90.17",
     "@theahaco/contract-explorer": "^1.1.0",
     "@theahaco/ts-config": "^1.2.0",
     "lossless-json": "^4.3.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-router-dom": "^7.12.0",
-    "zod": "^4.3.5"
+    "react-router-dom": "^7.12.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",

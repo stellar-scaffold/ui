@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { stellarNetwork } from "../contracts/util"
+	import { stellarNetwork } from "@stellar-scaffold/ui-core"
 	import FundAccountButton from "./FundAccountButton.svelte"
 	import NetworkPill from "./NetworkPill.svelte"
 	import WalletButton from "./WalletButton.svelte"

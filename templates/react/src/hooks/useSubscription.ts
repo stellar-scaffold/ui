@@ -1,11 +1,13 @@
+import {
+	subscribeToEvents,
+	type SubscriptionEvent,
+} from "@stellar-scaffold/ui-core"
 import { useEffect } from "react"
-import { type Api } from "@stellar/stellar-sdk/rpc"
-import { subscribeToEvents } from "../util/subscription"
 
 export function useSubscription(
 	contractId: string,
 	topic: string,
-	onEvent: (event: Api.EventResponse) => void,
+	onEvent: (event: SubscriptionEvent) => void,
 	pollInterval = 5000,
 ) {
 	useEffect(() => {

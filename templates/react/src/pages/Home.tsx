@@ -1,7 +1,7 @@
+import { labPrefix } from "@stellar-scaffold/ui-core"
 import React from "react"
 import { Link } from "react-router-dom"
 import { GuessTheNumber } from "../components/GuessTheNumber"
-import { labPrefix } from "../contracts/util"
 import styles from "./Home.module.css"
 
 const Home: React.FC = () => (

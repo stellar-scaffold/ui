@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { connectWallet, disconnectWallet } from "../util/wallet"
+	import { connectWallet, disconnectWallet } from "@stellar-scaffold/ui-core"
 	import { address, balances, isPending, walletWarnings } from "../stores/wallet"
 
 	let dialog = $state<HTMLDialogElement>(null!)

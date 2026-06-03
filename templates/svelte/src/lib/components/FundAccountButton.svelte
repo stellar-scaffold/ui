@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getFriendbotUrl } from "../util/friendbot"
+	import { getFriendbotUrl } from "@stellar-scaffold/ui-core"
 	import { address } from "../stores/wallet"
 	import { addNotification } from "../stores/notifications"
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { stellarNetwork } from "../contracts/util"
+	import { stellarNetwork } from "@stellar-scaffold/ui-core"
 	import { address, network } from "../stores/wallet"
 
 	// TODO: workaround until @creit-tech/stellar-wallets-kit uses the new name for local network

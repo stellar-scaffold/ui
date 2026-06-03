@@ -1,5 +1,5 @@
+import { stellarNetwork } from "@stellar-scaffold/ui-core"
 import React from "react"
-import { stellarNetwork } from "../contracts/util"
 import { useWallet } from "../hooks/useWallet"
 
 // TODO: workaround until @creit-tech/stellar-wallets-kit uses the new name for local network

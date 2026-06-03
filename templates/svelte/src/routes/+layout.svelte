@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/stores"
 	import ConnectAccount from "$lib/components/ConnectAccount.svelte"
-	import { labPrefix } from "$lib/contracts/util"
+	import { labPrefix } from "@stellar-scaffold/ui-core"
 	import { notifications } from "$lib/stores/notifications"
 	import "../index.css"
 

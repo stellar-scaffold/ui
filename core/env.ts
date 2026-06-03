@@ -1,5 +1,3 @@
-// AUDIT(ui-core): wallet-kit WalletNetwork + this env parsing should live once in
-// @stellar-scaffold/ui-core and be imported by every template (today duplicated).
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit"
 import { z } from "zod"
 

@@ -1,5 +1,5 @@
+import { stellarNetwork } from "@stellar-scaffold/ui-core"
 import React from "react"
-import { stellarNetwork } from "../contracts/util"
 import FundAccountButton from "./FundAccountButton"
 import NetworkPill from "./NetworkPill"
 import { WalletButton } from "./WalletButton"

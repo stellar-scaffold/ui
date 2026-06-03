@@ -1,6 +1,6 @@
 <script lang="ts">
 	import GuessTheNumber from "$lib/components/GuessTheNumber.svelte"
-	import { labPrefix } from "$lib/contracts/util"
+	import { labPrefix } from "@stellar-scaffold/ui-core"
 </script>
 
 <div class="home">

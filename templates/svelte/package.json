@@ -15,12 +15,12 @@
     "prepare": "svelte-kit sync || echo ''",
     "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
   },
+  "dependencies": {
+    "@stellar-scaffold/ui-core": "*"
+  },
   "devDependencies": {
-    "@creit.tech/stellar-wallets-kit": "^1.9.5",
     "@eslint/compat": "^2.0.4",
     "@eslint/js": "^10.0.1",
-    "@stellar/stellar-sdk": "^14.4.3",
-    "@stellar/stellar-xdr-json": "^23.0.0",
     "@sveltejs/adapter-static": "^3.0.8",
     "@sveltejs/kit": "^2.57.0",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
@@ -43,8 +43,7 @@
     "typescript-eslint": "^8.58.1",
     "vite": "^8.0.7",
     "vite-plugin-node-polyfills": "^0.25.0",
-    "vite-plugin-wasm": "^3.5.0",
-    "zod": "^4.3.5"
+    "vite-plugin-wasm": "^3.5.0"
   },
   "lint-staged": {
     "**/*": [

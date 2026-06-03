@@ -1,6 +1,10 @@
+import {
+	fetchBalances,
+	type MappedBalances,
+	wallet,
+	storage,
+} from "@stellar-scaffold/ui-core"
 import { derived, get, writable } from "svelte/store"
-import { fetchBalances, type MappedBalances, wallet } from "../util/wallet"
-import storage from "../util/storage"
 
 interface WalletBehavior {
 	getAddressBehavior: "standard" | "popup-always"
@@ -69,8 +73,10 @@ function getWalletWarnings(walletId: string | null): WalletWarnings {
 	const popupAlways = behavior.getAddressBehavior === "popup-always"
 	const noGetNetworkSupport = !behavior.supportsGetNetwork
 	const messages: string[] = []
-	if (popupAlways) messages.push("This wallet triggers a popup on every interaction. ")
-	if (noGetNetworkSupport) messages.push("This wallet doesn't support network detection. ")
+	if (popupAlways)
+		messages.push("This wallet triggers a popup on every interaction. ")
+	if (noGetNetworkSupport)
+		messages.push("This wallet doesn't support network detection. ")
 	return {
 		hasWarnings: popupAlways || noGetNetworkSupport,
 		popupAlways,
@@ -94,7 +100,9 @@ export const network = { subscribe: _network.subscribe }
 export const networkPassphrase = { subscribe: _networkPassphrase.subscribe }
 export const balances = { subscribe: _balances.subscribe }
 export const isPending = { subscribe: _isPending.subscribe }
-export const walletWarnings = derived(_walletId, ($id) => getWalletWarnings($id))
+export const walletWarnings = derived(_walletId, ($id) =>
+	getWalletWarnings($id),
+)
 export const signTransaction = wallet.signTransaction.bind(wallet)
 
 export async function updateBalances() {
@@ -139,7 +147,8 @@ async function fetchNetwork(
 	if (!behavior.supportsGetNetwork) {
 		return {
 			network: cachedNetwork ?? "testnet",
-			networkPassphrase: cachedPassphrase ?? "Test SDF Network ; September 2015",
+			networkPassphrase:
+				cachedPassphrase ?? "Test SDF Network ; September 2015",
 		}
 	}
 	return wallet.getNetwork()

@@ -1,6 +1,10 @@
 import { xdr } from "@stellar/stellar-sdk"
 import { Server, type Api } from "@stellar/stellar-sdk/rpc"
-import { rpcUrl, stellarNetwork } from "../contracts/util"
+import { rpcUrl, stellarNetwork } from "./env"
+
+/** A Soroban contract event delivered to a subscription callback. Re-exported so
+ * templates depend only on @stellar-scaffold/ui-core, not @stellar/stellar-sdk. */
+export type SubscriptionEvent = Api.EventResponse
 
 type PagingKey = string
 
@@ -21,7 +25,7 @@ const server = new Server(rpcUrl, { allowHttp: stellarNetwork === "LOCAL" })
 export function subscribeToEvents(
 	contractId: string,
 	topic: string,
-	onEvent: (event: Api.EventResponse) => void,
+	onEvent: (event: SubscriptionEvent) => void,
 	pollInterval = 5000,
 ): () => void {
 	const id = `${contractId}:${topic}`

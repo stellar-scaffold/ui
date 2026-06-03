@@ -1,7 +1,7 @@
+import { getFriendbotUrl } from "@stellar-scaffold/ui-core"
 import React, { useTransition } from "react"
 import { useNotification } from "../hooks/useNotification.ts"
 import { useWallet } from "../hooks/useWallet.ts"
-import { getFriendbotUrl } from "../util/friendbot"
 
 const FundAccountButton: React.FC = () => {
 	const { addNotification } = useNotification()
