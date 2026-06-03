@@ -15,8 +15,10 @@ users of a scaffolded project.
 | `contracts/`             | Example Soroban contracts (Tutorial + vendored OpenZeppelin)                                                                                                 |
 | `e2e/`                   | Playwright parity + visual suite                                                                                                                             |
 
-`init` keeps `app/` + `core/` + `bindings/` + `contracts/` and removes the
-contributor-only `templates/` and `e2e/`.
+`init` keeps `app/` + `core/` + `bindings/` + `contracts/`, plus a slimmed
+`e2e/` — its self-adapting config targets the single `app/`, and the
+per-framework snapshot baselines are pruned. Only the contributor-only
+`templates/` is removed.
 
 ## Developing a template in place
 
