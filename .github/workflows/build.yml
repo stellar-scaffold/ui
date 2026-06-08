@@ -33,8 +33,23 @@ jobs:
       # Install binstall to quickly install stellar-scaffold-cli
       - name: Install cargo-binstall
         uses: cargo-bins/cargo-binstall@main
+      # If this PR's branch name also exists on the CLI repo, build the CLI from
+      # that branch so coordinated cross-repo changes can go green before the CLI
+      # is released. Otherwise binstall the released CLI (fast path).
+      - name: Resolve CLI source
+        id: cli
+        run: |
+          REF="${{ github.head_ref }}"
+          if [ -n "$REF" ] && git ls-remote --exit-code --heads \
+              https://github.com/theahaco/scaffold-stellar "$REF" >/dev/null 2>&1; then
+            echo "ref=$REF" >> "$GITHUB_OUTPUT"
+            echo "Building CLI from branch $REF"
+          else
+            echo "Using released CLI (binstall)"
+          fi
       # Check for stellar-scaffold-cli binary and install if not present
-      - name: Check for stellar-scaffold binary
+      - name: Install stellar-scaffold (released, fast)
+        if: steps.cli.outputs.ref == ''
         run: |
           if ! command -v stellar-scaffold &> /dev/null; then
             echo "stellar-scaffold not found, installing..."
@@ -42,6 +57,12 @@ jobs:
           else
             echo "stellar-scaffold already installed. Clear cache to force reinstall."
           fi
+      - name: Install stellar-scaffold (from CLI branch)
+        if: steps.cli.outputs.ref != ''
+        run: |
+          cargo install stellar-scaffold-cli \
+            --git https://github.com/theahaco/scaffold-stellar \
+            --branch ${{ steps.cli.outputs.ref }}
       - name: Start Stellar local network
         uses: stellar/quickstart@main
         with:
