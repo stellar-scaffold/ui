@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { labPrefix } from "@stellar-scaffold/ui-core"
+	import { labPrefix } from "@stellar-scaffold/app-lib"
 	import { page } from "$app/stores"
 	import ConnectAccount from "$lib/components/ConnectAccount.svelte"
 	import { notifications } from "$lib/stores/notifications"
-	import "@stellar-scaffold/ui-core/styles.css"
+	import "@stellar-scaffold/app-lib/styles.css"
 
 	let { children } = $props()
 </script>

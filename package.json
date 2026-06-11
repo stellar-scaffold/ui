@@ -9,8 +9,8 @@
   },
   "workspaces": [
     "templates/*",
-    "bindings/*",
-    "core",
+    "app-lib",
+    "app-lib/clients/*",
     "e2e"
   ],
   "prettier": "@theahaco/ts-config/prettier"

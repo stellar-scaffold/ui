@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fundAccount } from "@stellar-scaffold/ui-core"
+	import { fundAccount } from "@stellar-scaffold/app-lib"
 	import { addNotification } from "../stores/notifications"
 	import { address } from "../stores/wallet"
 

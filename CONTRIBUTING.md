@@ -10,12 +10,11 @@ users of a scaffolded project.
 | Path                     | What it is                                                                                                                                                   |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `templates/<framework>/` | Per-framework starter apps (React, Svelte, …)                                                                                                                |
-| `core/`                  | `@stellar-scaffold/ui-core` — shared, framework-agnostic layer (util, env reader, display/business helpers, `styles.css`) plus the generated `core/clients/` |
-| `bindings/`              | CLI-generated Contract Bindings                                                                                                                              |
+| `app-lib/`               | `@stellar-scaffold/app-lib` — shared, framework-agnostic layer (util, env reader, display/business helpers, `styles.css`) plus the CLI-generated `app-lib/clients/` (Binding packages + flattened Clients `index.ts`) |
 | `contracts/`             | Example Soroban contracts (Tutorial + vendored OpenZeppelin)                                                                                                 |
 | `e2e/`                   | Playwright parity + visual suite                                                                                                                             |
 
-`init` keeps `app/` + `core/` + `bindings/` + `contracts/`, plus a slimmed
+`init` keeps `app/` + `app-lib/` + `contracts/`, plus a slimmed
 `e2e/` — its self-adapting config targets the single `app/`, and the
 per-framework snapshot baselines are pruned. Only the contributor-only
 `templates/` is removed.
@@ -35,8 +34,8 @@ Each runs `stellar scaffold watch --build-clients` alongside the dev server, so
 you need the **Stellar CLI** and **Stellar Scaffold CLI** installed (the root
 `npm start` prints install instructions if either is missing).
 
-Shared code lives in `core/`; changes there are picked up by every template via
-the `@stellar-scaffold/ui-core` workspace package. Keep framework-specific code
+Shared code lives in `app-lib/`; changes there are picked up by every template via
+the `@stellar-scaffold/app-lib` workspace package. Keep framework-specific code
 (providers/stores, UI components) in the templates.
 
 ## Tests

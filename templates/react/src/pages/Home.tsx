@@ -1,4 +1,4 @@
-import { labPrefix } from "@stellar-scaffold/ui-core"
+import { labPrefix } from "@stellar-scaffold/app-lib"
 import React from "react"
 import { Link } from "react-router-dom"
 import { GuessTheNumber } from "../components/GuessTheNumber"

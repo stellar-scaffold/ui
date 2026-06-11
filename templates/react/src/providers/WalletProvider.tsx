@@ -3,7 +3,7 @@ import {
 	wallet,
 	fetchBalances,
 	type MappedBalances,
-} from "@stellar-scaffold/ui-core"
+} from "@stellar-scaffold/app-lib"
 import {
 	createContext,
 	useCallback,

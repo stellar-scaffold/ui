@@ -3,7 +3,7 @@ import {
 	type MappedBalances,
 	wallet,
 	storage,
-} from "@stellar-scaffold/ui-core"
+} from "@stellar-scaffold/app-lib"
 import { derived, get, writable } from "svelte/store"
 
 interface WalletBehavior {

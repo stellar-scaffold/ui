@@ -3,7 +3,7 @@
 		connectWallet,
 		disconnectWallet,
 		shortAddress,
-	} from "@stellar-scaffold/ui-core"
+	} from "@stellar-scaffold/app-lib"
 	import { address, balances, isPending, walletWarnings } from "../stores/wallet"
 
 	let dialog = $state<HTMLDialogElement>(null!)

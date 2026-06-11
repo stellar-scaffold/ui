@@ -35,16 +35,12 @@ lerna-debug.log*
 # macOS-specific files
 .DS_Store
 
-# generated contract bindings
-bindings/*
-!bindings/.gitkeep
-
-# generated contract client imports
-core/clients/*
-!core/clients/.gitkeep
-!core/clients/util.ts
-template/react/src/contracts/*
-!template/react/src/contracts/util.ts
+# generated contract bindings + clients (Binding packages and flattened index.ts)
+app-lib/clients/*
+!app-lib/clients/.gitkeep
 
 # Agent/editor scratch
 .claude/
+
+# TypeScript incremental build info
+*.tsbuildinfo

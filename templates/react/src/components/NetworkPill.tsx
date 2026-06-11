@@ -1,4 +1,4 @@
-import { networkStatus } from "@stellar-scaffold/ui-core"
+import { networkStatus } from "@stellar-scaffold/app-lib"
 import React from "react"
 import { useWallet } from "../hooks/useWallet"
 

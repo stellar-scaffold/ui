@@ -1,5 +1,5 @@
 <script lang="ts">
-	import game from "@stellar-scaffold/ui-core/clients/guess_the_number"
+	import { guessTheNumber } from "@stellar-scaffold/app-lib/clients"
 	import { address, signTransaction, updateBalances } from "../stores/wallet"
 
 	let result = $state<"idle" | "loading" | "success" | "failure">("idle")
@@ -19,7 +19,7 @@
 
 		result = "loading"
 
-		const tx = await game.guess(
+		const tx = await guessTheNumber.guess(
 			{ a_number: BigInt(guess), guesser: $address },
 			{ publicKey: $address },
 		)

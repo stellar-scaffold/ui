@@ -14,7 +14,7 @@
     "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "@stellar-scaffold/ui-core": "*"
+    "@stellar-scaffold/app-lib": "*"
   },
   "devDependencies": {
     "@eslint/compat": "^2.0.4",

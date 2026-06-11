@@ -14,7 +14,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@stellar-scaffold/ui-core": "*",
+    "@stellar-scaffold/app-lib": "*",
     "@tanstack/react-query": "^5.90.17",
     "@theahaco/contract-explorer": "^1.1.0",
     "@theahaco/ts-config": "^1.2.0",

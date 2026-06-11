@@ -1,4 +1,4 @@
-import { labPrefix } from "@stellar-scaffold/ui-core"
+import { labPrefix } from "@stellar-scaffold/app-lib"
 import { NavLink, Outlet, Route, Routes } from "react-router-dom"
 import styles from "./App.module.css"
 import ConnectAccount from "./components/ConnectAccount"

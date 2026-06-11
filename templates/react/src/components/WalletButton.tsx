@@ -2,7 +2,7 @@ import {
 	connectWallet,
 	disconnectWallet,
 	shortAddress,
-} from "@stellar-scaffold/ui-core"
+} from "@stellar-scaffold/app-lib"
 import { useRef } from "react"
 import { useWallet } from "../hooks/useWallet"
 

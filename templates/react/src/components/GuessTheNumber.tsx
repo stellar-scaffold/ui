@@ -1,4 +1,4 @@
-import game from "@stellar-scaffold/ui-core/clients/guess_the_number"
+import { guessTheNumber } from "@stellar-scaffold/app-lib/clients"
 import { useState } from "react"
 import { useWallet } from "../hooks/useWallet"
 
@@ -22,7 +22,7 @@ export const GuessTheNumber = () => {
 
 		setResult("loading")
 
-		const tx = await game.guess(
+		const tx = await guessTheNumber.guess(
 			{ a_number: BigInt(guess), guesser: address },
 			{ publicKey: address },
 		)

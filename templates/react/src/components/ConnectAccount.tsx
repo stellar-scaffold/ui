@@ -1,4 +1,4 @@
-import { stellarNetwork } from "@stellar-scaffold/ui-core"
+import { stellarNetwork } from "@stellar-scaffold/app-lib"
 import React from "react"
 import FundAccountButton from "./FundAccountButton"
 import NetworkPill from "./NetworkPill"
