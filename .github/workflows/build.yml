@@ -60,9 +60,16 @@ jobs:
       - name: Install stellar-scaffold (from CLI branch)
         if: steps.cli.outputs.ref != ''
         run: |
-          cargo install stellar-scaffold-cli \
-            --git https://github.com/theahaco/scaffold-stellar \
-            --branch ${{ steps.cli.outputs.ref }}
+          # `cargo install --git` builds with the runner's default toolchain and
+          # ignores the CLI repo's rust-toolchain.toml — but the CLI's deps
+          # (soroban-cli, stellar-rpc-client, …) require a newer rustc than the
+          # runner ships. Clone the branch and install from the path so, with the
+          # clone as the working dir, rustup honors the pinned toolchain
+          # (auto-installed on demand).
+          git clone --depth 1 --branch "${{ steps.cli.outputs.ref }}" \
+            https://github.com/theahaco/scaffold-stellar "$RUNNER_TEMP/cli-src"
+          cd "$RUNNER_TEMP/cli-src"
+          cargo install --path crates/stellar-scaffold-cli --locked
       - name: Start Stellar local network
         uses: stellar/quickstart@main
         with:
