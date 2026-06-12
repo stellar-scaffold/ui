@@ -27,7 +27,7 @@
     "@types/lodash": "^4.17.24",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.2.0",
+    "@vitejs/plugin-react": "^6.0.0",
     "concurrently": "^9.2.1",
     "dotenv": "^17.4.2",
     "eslint": "^10.0.0",
@@ -37,7 +37,7 @@
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.3",
     "typescript": "~5.9.3",
-    "vite": "^7.3.3",
+    "vite": "^8.0.0",
     "vite-plugin-node-polyfills": "^0.28.0",
     "vite-plugin-wasm": "^3.6.0"
   },
