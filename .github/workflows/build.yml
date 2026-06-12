@@ -89,7 +89,9 @@ jobs:
           path: ~/.cargo/bin/stellar-scaffold
           key: cli-bin-${{ runner.os }}-${{ steps.cli.outputs.sha }}
       - name: Install stellar-scaffold (from CLI branch)
-        if: steps.cli.outputs.ref != '' && steps.cli-cache.outputs.cache-hit != 'true'
+        if:
+          steps.cli.outputs.ref != '' && steps.cli-cache.outputs.cache-hit !=
+          'true'
         run: |
           # `cargo install --git` builds with the runner's default toolchain and
           # ignores the CLI repo's rust-toolchain.toml — but the CLI's deps
