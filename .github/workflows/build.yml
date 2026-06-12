@@ -78,7 +78,7 @@ jobs:
         run: |
           mkdir -p .config/stellar/identity
           echo 'secret_key = "SC5O7VZUXDJ6JBDSZ74DSERXL7W3Y5LTOAMRF7RQRL3TAGAPS7LUVG3L"' > .config/stellar/identity/me.toml
-      - run: npm ci --legacy-peer-deps
+      - run: npm ci
       - run: npm run lint --workspaces --if-present
       - run: npx prettier . --check
       - name: Build with Scaffold and build client packages
