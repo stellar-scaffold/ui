@@ -33,9 +33,11 @@ jobs:
       # ---- Slow path: CLI toolchain, local network, contract codegen ----
       - uses: actions/cache@v3
         with:
+          # NB: ~/.cargo/bin is deliberately NOT cached here — the
+          # stellar-scaffold binary is cached separately keyed on the CLI
+          # commit SHA (see "Cache stellar-scaffold binary"). Caching it under
+          # the UI Cargo.lock key would restore a stale/mismatched binary.
           path: |
-            ~/.cargo/bin/
-            runner/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
@@ -56,10 +58,13 @@ jobs:
         id: cli
         run: |
           REF="${{ github.head_ref }}"
-          if [ -n "$REF" ] && git ls-remote --exit-code --heads \
-              https://github.com/theahaco/scaffold-stellar "$REF" >/dev/null 2>&1; then
+          SHA=$(git ls-remote --heads \
+            https://github.com/theahaco/scaffold-stellar "$REF" 2>/dev/null \
+            | cut -f1)
+          if [ -n "$REF" ] && [ -n "$SHA" ]; then
             echo "ref=$REF" >> "$GITHUB_OUTPUT"
-            echo "Building CLI from branch $REF"
+            echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+            echo "Building CLI from branch $REF ($SHA)"
           else
             echo "Using released CLI (binstall)"
           fi
@@ -73,8 +78,18 @@ jobs:
           else
             echo "stellar-scaffold already installed. Clear cache to force reinstall."
           fi
-      - name: Install stellar-scaffold (from CLI branch)
+      # Cache the branch-built binary keyed on the CLI commit SHA, so reruns
+      # without a CLI push skip the ~14 min rebuild but a new CLI commit busts
+      # the cache.
+      - name: Cache stellar-scaffold binary
         if: steps.cli.outputs.ref != ''
+        id: cli-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/bin/stellar-scaffold
+          key: cli-bin-${{ runner.os }}-${{ steps.cli.outputs.sha }}
+      - name: Install stellar-scaffold (from CLI branch)
+        if: steps.cli.outputs.ref != '' && steps.cli-cache.outputs.cache-hit != 'true'
         run: |
           # `cargo install --git` builds with the runner's default toolchain and
           # ignores the CLI repo's rust-toolchain.toml — but the CLI's deps
