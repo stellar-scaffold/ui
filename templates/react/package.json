@@ -15,13 +15,13 @@
   },
   "dependencies": {
     "@stellar-scaffold/app-lib": "*",
-    "@tanstack/react-query": "^5.90.17",
+    "@tanstack/react-query": "^5.101.0",
     "@theahaco/contract-explorer": "^1.1.0",
     "@theahaco/ts-config": "^1.3.0",
     "lossless-json": "^4.3.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-router-dom": "^7.12.0"
+    "react-router-dom": "^7.17.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",
