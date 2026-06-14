@@ -1,11 +1,9 @@
 version: 1
 
-# Tool behavior. These default to the values below, so you can delete this
-# whole `config:` block and nothing changes — it's here to document where the
-# CLI reads from and writes to.
+# Scaffold CLI Configuration
 config:
   # Your Rust/Soroban contract source.
-  contracts_dir: contracts
+  # contracts_dir: contracts
 
   # The generated TypeScript contract layer your app imports. The CLI writes
   # and regenerates everything here on build/redeploy, so you normally don't
@@ -16,4 +14,4 @@ config:
   #                               `@stellar-scaffold/app-lib/clients`
   # To customize a client, import it into your own code under app/ instead of
   # editing the generated file. Everything here is gitignored except .gitkeep.
-  clients_dir: app-lib/clients
+  # clients_dir: app-lib/clients
