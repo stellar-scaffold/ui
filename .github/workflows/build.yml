@@ -15,11 +15,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # ---- Fast checks first ----
+      # Fail in seconds on dep drift / lint / format before the multi-minute CLI
+      # build + Docker network below, so trivial fixes don't pay the full cost.
+
+      # Shared toolchain deps must stay in lockstep across templates (contributor
+      # guard; end users only ever instantiate one template). Reads package.json
+      # only — no install needed, so it runs first.
+      - name: Check template dependency parity
+        run: node scripts/check-dep-parity.mjs
+
+      - run: npm ci
+      - run: npm run lint --workspaces --if-present
+      - run: npx prettier . --check
+
+      # ---- Slow path: CLI toolchain, local network, contract codegen ----
       - uses: actions/cache@v3
         with:
+          # NB: ~/.cargo/bin is deliberately NOT cached here — the
+          # stellar-scaffold binary is cached separately keyed on the CLI
+          # commit SHA (see "Cache stellar-scaffold binary"). Caching it under
+          # the UI Cargo.lock key would restore a stale/mismatched binary.
           path: |
-            ~/.cargo/bin/
-            runner/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
@@ -33,8 +51,26 @@ jobs:
       # Install binstall to quickly install stellar-scaffold-cli
       - name: Install cargo-binstall
         uses: cargo-bins/cargo-binstall@main
+      # If this PR's branch name also exists on the CLI repo, build the CLI from
+      # that branch so coordinated cross-repo changes can go green before the CLI
+      # is released. Otherwise binstall the released CLI (fast path).
+      - name: Resolve CLI source
+        id: cli
+        run: |
+          REF="${{ github.head_ref }}"
+          SHA=$(git ls-remote --heads \
+            https://github.com/theahaco/scaffold-stellar "$REF" 2>/dev/null \
+            | cut -f1)
+          if [ -n "$REF" ] && [ -n "$SHA" ]; then
+            echo "ref=$REF" >> "$GITHUB_OUTPUT"
+            echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+            echo "Building CLI from branch $REF ($SHA)"
+          else
+            echo "Using released CLI (binstall)"
+          fi
       # Check for stellar-scaffold-cli binary and install if not present
-      - name: Check for stellar-scaffold binary
+      - name: Install stellar-scaffold (released, fast)
+        if: steps.cli.outputs.ref == ''
         run: |
           if ! command -v stellar-scaffold &> /dev/null; then
             echo "stellar-scaffold not found, installing..."
@@ -42,6 +78,31 @@ jobs:
           else
             echo "stellar-scaffold already installed. Clear cache to force reinstall."
           fi
+      # Cache the branch-built binary keyed on the CLI commit SHA, so reruns
+      # without a CLI push skip the ~14 min rebuild but a new CLI commit busts
+      # the cache.
+      - name: Cache stellar-scaffold binary
+        if: steps.cli.outputs.ref != ''
+        id: cli-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/bin/stellar-scaffold
+          key: cli-bin-${{ runner.os }}-${{ steps.cli.outputs.sha }}
+      - name: Install stellar-scaffold (from CLI branch)
+        if:
+          steps.cli.outputs.ref != '' && steps.cli-cache.outputs.cache-hit !=
+          'true'
+        run: |
+          # `cargo install --git` builds with the runner's default toolchain and
+          # ignores the CLI repo's rust-toolchain.toml — but the CLI's deps
+          # (soroban-cli, stellar-rpc-client, …) require a newer rustc than the
+          # runner ships. Clone the branch and install from the path so, with the
+          # clone as the working dir, rustup honors the pinned toolchain
+          # (auto-installed on demand).
+          git clone --depth 1 --branch "${{ steps.cli.outputs.ref }}" \
+            https://github.com/theahaco/scaffold-stellar "$RUNNER_TEMP/cli-src"
+          cd "$RUNNER_TEMP/cli-src"
+          cargo install --path crates/stellar-scaffold-cli --locked
       - name: Start Stellar local network
         uses: stellar/quickstart@main
         with:
@@ -50,9 +111,6 @@ jobs:
         run: |
           mkdir -p .config/stellar/identity
           echo 'secret_key = "SC5O7VZUXDJ6JBDSZ74DSERXL7W3Y5LTOAMRF7RQRL3TAGAPS7LUVG3L"' > .config/stellar/identity/me.toml
-      - run: npm ci
-      - run: npm run lint
-      - run: npx prettier . --check
       - name: Build with Scaffold and build client packages
         run:
           STELLAR_SCAFFOLD_ENV=development stellar-scaffold build
@@ -70,7 +128,10 @@ jobs:
             echo "Check the \"Build with Scaffold\" step logs."
             exit 1
           fi
-      - run: npm run install:contracts
-      - run: npm run build
-      - name: Run tests
-        run: npm test --if-present
+      - run: npm run build --workspaces --if-present
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - name: Run cross-framework parity smoke tests
+        run: npx playwright test tests/smoke.spec.ts
+        working-directory: e2e

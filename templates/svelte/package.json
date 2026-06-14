@@ -1,0 +1,56 @@
+{
+  "name": "@stellar-scaffold/ui-svelte",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "npm start",
+    "start": "concurrently --kill-others-on-fail --names stellar,vite -c gray,green --pad-prefix \"stellar scaffold watch --build-clients\" \"vite dev\"",
+    "build": "svelte-kit sync && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "format": "prettier . --write",
+    "prepare": "svelte-kit sync || echo ''",
+    "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@stellar-scaffold/app-lib": "*"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^2.0.4",
+    "@eslint/js": "^10.0.1",
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@sveltejs/kit": "^2.57.0",
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@theahaco/ts-config": "^1.3.0",
+    "@types/node": "^22",
+    "concurrently": "^9.2.1",
+    "dotenv": "^17.2.3",
+    "eslint": "^10.0.0",
+    "eslint-plugin-svelte": "^3.19.0",
+    "glob": "^13.0.0",
+    "globals": "^17.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "lossless-json": "^4.3.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-svelte": "^3.5.1",
+    "svelte": "^5.55.2",
+    "svelte-check": "^4.4.6",
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.61.0",
+    "vite": "^8.0.7",
+    "vite-plugin-node-polyfills": "^0.28.0",
+    "vite-plugin-wasm": "^3.5.0"
+  },
+  "lint-staged": {
+    "**/*": [
+      "eslint --fix --no-warn-ignored",
+      "prettier --write --ignore-unknown"
+    ]
+  },
+  "prettier": "@theahaco/ts-config/prettier",
+  "engines": {
+    "stellar-scaffold": ">=0.0.24"
+  }
+}

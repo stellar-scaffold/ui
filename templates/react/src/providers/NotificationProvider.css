@@ -1,0 +1,49 @@
+.notification-container {
+	position: fixed;
+	top: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	z-index: 1000;
+}
+
+.notification {
+	padding: 0.75rem 1rem;
+	border-radius: 6px;
+	font-size: 0.875rem;
+	border: 1px solid var(--color-border);
+	background: var(--color-bg);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+	min-width: 280px;
+	max-width: 400px;
+	transition:
+		transform 0.3s ease,
+		opacity 0.3s ease;
+	opacity: 1;
+}
+
+.notification.slide-in {
+	transform: translateY(0);
+}
+
+.notification.slide-out {
+	transform: translateY(-20px);
+	opacity: 0;
+}
+
+.notification-success {
+	border-color: var(--color-success);
+	color: var(--color-success);
+}
+
+.notification-error {
+	border-color: var(--color-error);
+	color: var(--color-error);
+}
+
+.notification-warning {
+	border-color: var(--color-warning);
+	color: var(--color-warning);
+}

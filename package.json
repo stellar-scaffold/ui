@@ -1,60 +1,17 @@
 {
-  "name": "scaffold-stellar-frontend",
-  "type": "module",
-  "version": "0.0.1",
+  "name": "@stellar-scaffold/ui",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "dev": "npm start",
-    "start": "concurrently --kill-others-on-fail --names stellar,vite -c gray,green --pad-prefix \"stellar scaffold watch --build-clients\" \"vite\"",
-    "build": "tsc -b && vite build",
-    "install:contracts": "npm install --workspaces && npm run build --workspaces",
-    "preview": "vite preview",
-    "lint": "eslint .",
-    "format": "prettier . --write",
-    "prepare": "husky",
-    "typecheck": "tsc"
+    "prestart": "node scripts/dev-guard.mjs",
+    "start": "npm start --workspace app"
   },
   "workspaces": [
-    "packages/*"
+    "templates/*",
+    "app-lib",
+    "app-lib/clients/*",
+    "e2e"
   ],
-  "dependencies": {
-    "@creit.tech/stellar-wallets-kit": "^1.9.5",
-    "@stellar/design-system": "^3.2.7",
-    "@stellar/stellar-sdk": "^14.4.3",
-    "@stellar/stellar-xdr-json": "^23.0.0",
-    "@tanstack/react-query": "^5.90.17",
-    "@theahaco/contract-explorer": "^1.1.0",
-    "@theahaco/ts-config": "^1.2.0",
-    "lossless-json": "^4.3.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-router-dom": "^7.12.0",
-    "zod": "^4.3.5"
-  },
-  "devDependencies": {
-    "@types/lodash": "^4.17.23",
-    "@types/react": "^19.2.10",
-    "@types/react-dom": "^19.2.3",
-    "@types/react-router-dom": "^5.3.3",
-    "@vitejs/plugin-react": "^5.1.2",
-    "concurrently": "^9.2.1",
-    "dotenv": "^17.2.3",
-    "eslint": "^9.39.2",
-    "glob": "^13.0.0",
-    "globals": "^17.0.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
-    "prettier": "^3.8.0",
-    "typescript": "~5.9.3",
-    "vite": "^7.3.1",
-    "vite-plugin-node-polyfills": "^0.25.0",
-    "vite-plugin-wasm": "^3.5.0"
-  },
-  "lint-staged": {
-    "**/*": [
-      "eslint --fix --no-warn-ignored",
-      "prettier --write --ignore-unknown"
-    ]
-  },
   "prettier": "@theahaco/ts-config/prettier"
 }

@@ -1,0 +1,36 @@
+.Home {
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.Home > div:first-child {
+	text-align: center;
+	margin: 4rem auto;
+	max-width: 560px;
+}
+
+.Home h1 {
+	font-weight: normal;
+}
+
+.Home :global(.card) {
+	margin-bottom: 2rem;
+}
+
+.contractNav {
+	display: flex;
+	gap: 1rem;
+	margin: 1rem 0;
+	flex-wrap: wrap;
+}
+
+.cards {
+	display: flex;
+	gap: 2rem;
+	margin-bottom: 2rem;
+}
+
+.cards :global(.card) {
+	flex: 1;
+	margin-bottom: 0;
+}
