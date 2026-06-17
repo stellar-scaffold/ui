@@ -11,7 +11,7 @@
     "templates/*",
     "app-lib",
     "app-lib/clients/*",
-    "e2e"
+    "tests"
   ],
   "prettier": "@theahaco/ts-config/prettier"
 }
