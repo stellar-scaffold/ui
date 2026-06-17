@@ -16,9 +16,9 @@ crate-type = ["cdylib"]
 doctest = false
 
 [dependencies]
-soroban-sdk = "23.0.3"
-stellar-registry = "0.0.4"
+soroban-sdk = { workspace = true }
+stellar-registry = "0.0.10"
 
 [dev-dependencies]
-stellar-xdr = { version = "23.0.0", features = ["curr", "serde"] }
-soroban-sdk = { version = "23.0.3", features = ["testutils"] }
+stellar-xdr = { version = "26.0.1", features = ["curr", "serde"] }
+soroban-sdk = { workspace = true, features = ["testutils"] }
