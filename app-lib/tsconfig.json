@@ -1,0 +1,4 @@
+{
+	"extends": "@theahaco/ts-config/typescript.app",
+	"include": ["."]
+}

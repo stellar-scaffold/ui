@@ -1,60 +1,56 @@
 import {
-	type ISupportedWallet,
+	KitEventType,
+	type Networks,
 	StellarWalletsKit,
-	type WalletNetwork,
-	allowAllModules,
 } from "@creit.tech/stellar-wallets-kit"
+import { defaultModules } from "@creit.tech/stellar-wallets-kit/modules/utils"
 import { Horizon } from "@stellar/stellar-sdk"
 import { networkPassphrase, stellarNetwork } from "./env"
-import storage from "./storage"
 
-const kit: StellarWalletsKit = new StellarWalletsKit({
-	network: networkPassphrase as WalletNetwork,
-	modules: allowAllModules(),
+// v2 is a fully static API. `init` is called once here at module load; the kit
+// owns its own localStorage persistence (active address, selected wallet) and
+// restores it on reload, so the templates no longer mirror that state by hand.
+StellarWalletsKit.init({
+	network: networkPassphrase as Networks,
+	modules: defaultModules(),
 })
 
-export const connectWallet = async () => {
-	await kit.openModal({
-		modalTitle: "Connect to your wallet",
-		onWalletSelected: (option: ISupportedWallet) => {
-			const selectedId = option.id
-			kit.setWallet(selectedId)
+/** Open the built-in wallet-selection modal; resolves once a wallet is connected. */
+export const connectWallet = () => StellarWalletsKit.authModal()
 
-			// Now open selected wallet's login flow by calling `getAddress` --
-			// Yes, it's strange that a getter has a side effect of opening a modal
-			void kit.getAddress().then((address) => {
-				// Once `getAddress` returns successfully, we know they actually
-				// connected the selected wallet, and we set our localStorage
-				if (address.address) {
-					storage.setItem("walletId", selectedId)
-					storage.setItem("walletAddress", address.address)
-				} else {
-					storage.setItem("walletId", "")
-					storage.setItem("walletAddress", "")
-				}
-			})
-			if (selectedId == "freighter" || selectedId == "hot-wallet") {
-				void kit.getNetwork().then((network) => {
-					if (network.network && network.networkPassphrase) {
-						storage.setItem("walletNetwork", network.network)
-						storage.setItem("networkPassphrase", network.networkPassphrase)
-					} else {
-						storage.setItem("walletNetwork", "")
-						storage.setItem("networkPassphrase", "")
-					}
-				})
-			}
-		},
-	})
+/** Open the built-in profile modal (shows the connected account + disconnect). */
+export const profileModal = () => StellarWalletsKit.profileModal()
+
+/** Disconnect the active wallet. The kit clears its own persisted state. */
+export const disconnectWallet = () => StellarWalletsKit.disconnect()
+
+/** Sign a transaction with the active wallet. Passed to generated contract clients. */
+export const signTransaction = StellarWalletsKit.signTransaction
+
+export interface WalletState {
+	address: string | undefined
+	networkPassphrase: string | undefined
 }
 
-export const disconnectWallet = async () => {
-	await kit.disconnect()
-	storage.removeItem("walletId")
-	storage.removeItem("walletAddress")
-	storage.removeItem("walletNetwork")
-	storage.removeItem("networkPassphrase")
-}
+/**
+ * Subscribe to wallet state changes (active address / network). The callback
+ * fires immediately with the current state on subscribe (covering reload
+ * restore) and on every subsequent change. Returns an unsubscribe function.
+ * Framework-agnostic — wrap in onMount / useEffect.
+ */
+export const onWalletStateChange = (
+	cb: (state: WalletState) => void,
+): (() => void) =>
+	StellarWalletsKit.on(KitEventType.STATE_UPDATED, (event) =>
+		cb({
+			address: event.payload.address,
+			networkPassphrase: event.payload.networkPassphrase,
+		}),
+	)
+
+/** Subscribe to wallet disconnects. Returns an unsubscribe function. */
+export const onWalletDisconnect = (cb: () => void): (() => void) =>
+	StellarWalletsKit.on(KitEventType.DISCONNECT, cb)
 
 function getHorizonHost(mode: string) {
 	switch (mode) {
@@ -106,4 +102,5 @@ export const fetchBalances = async (address: string) => {
 	}
 }
 
-export const wallet = kit
+// The kit itself, for templates that need `on(...)` subscriptions or `setWallet`.
+export const wallet = StellarWalletsKit
