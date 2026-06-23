@@ -9,7 +9,7 @@
     "./clients": "./clients/index.ts"
   },
   "dependencies": {
-    "@creit.tech/stellar-wallets-kit": "^1.9.5",
+    "@creit.tech/stellar-wallets-kit": "^2.3.0",
     "@stellar/stellar-sdk": "^15.1.0",
     "zod": "^4.3.5"
   }

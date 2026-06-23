@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { networkStatus } from "@stellar-scaffold/app-lib"
-	import { address, network } from "../stores/wallet"
+	import { address, networkPassphrase } from "../stores/wallet"
 
-	const status = $derived(networkStatus($address, $network))
+	const status = $derived(networkStatus($address, $networkPassphrase))
 </script>
 
 <div
