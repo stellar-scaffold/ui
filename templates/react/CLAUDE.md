@@ -65,12 +65,17 @@ instance of the contract client and import `rpcUrl`/`networkPassphrase` from
   `/debug/:contractName`. Uses `import.meta.glob("../../contracts/*.ts")` to
   dynamically load all contract clients. Renders contract methods as interactive
   forms using JSON Schema from contract metadata.
-- **`src/providers/WalletProvider.tsx`**: Manages wallet connection state by
-  polling `localStorage` every 1 second via `StellarWalletsKit`. Exposes
-  `address`, `balances`, `network`, `signTransaction`, `updateBalances`.
+- **`src/providers/WalletProvider.tsx`**: Manages wallet connection state via
+  Stellar-Wallets-Kit v2 state events (`onWalletStateChange` /
+  `onWalletDisconnect` from `@stellar-scaffold/app-lib`). No polling — the kit
+  owns persistence and restores on reload. Exposes `address`, `balances`,
+  `networkPassphrase`, `isPending`, `signTransaction`, `updateBalances`.
 - **`src/hooks/useWallet.ts`**: Consume `WalletContext` in components.
-- **`src/util/wallet.ts`**: `StellarWalletsKit` instance,
-  `connectWallet`/`disconnectWallet`, and `fetchBalances` via Horizon.
+- Wallet primitives (`StellarWalletsKit` init, `connectWallet`,
+  `disconnectWallet`, `profileModal`, `signTransaction`, `fetchBalances`) live
+  in the shared `@stellar-scaffold/app-lib` package, not in the template. v2
+  ships its own connect/profile modals, so the template no longer renders a
+  custom disconnect dialog or per-wallet warning badges.
 - **`packages/`**: npm workspace packages for generated contract TypeScript
   bindings (populated by `stellar scaffold`).
 - **`contracts/`**: Rust/Soroban smart contract source (Cargo workspace with

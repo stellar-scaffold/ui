@@ -3,8 +3,8 @@ import React from "react"
 import { useWallet } from "../hooks/useWallet"
 
 const NetworkPill: React.FC = () => {
-	const { network, address } = useWallet()
-	const { appNetwork, state, title } = networkStatus(address, network)
+	const { networkPassphrase, address } = useWallet()
+	const { appNetwork, state, title } = networkStatus(address, networkPassphrase)
 
 	return (
 		<div

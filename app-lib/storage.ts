@@ -9,13 +9,12 @@
  * Valid localStorage key names mapped to an arbitrary value of the correct
  * type. Used to provide both good typing AND good type-ahead, so that you can
  * see a list of valid storage keys while using this module elsewhere.
+ *
+ * Wallet state (active address, selected wallet, network) is no longer stored
+ * here — Stellar-Wallets-Kit v2 owns its own persistence. Add app-specific keys
+ * as needed.
  */
-type Schema = {
-	walletId: string
-	walletAddress: string
-	walletNetwork: string
-	networkPassphrase: string
-}
+type Schema = Record<string, unknown>
 
 /**
  * Typed interface that follows the Web Storage API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
