@@ -19,10 +19,8 @@ const passphraseToName: Record<string, string> = Object.fromEntries(
 export type NetworkState = "disconnected" | "mismatch" | "ok"
 
 /**
- * Compare the app's configured network against the connected wallet's network.
- * The wallet network arrives as a passphrase (from the kit's state events), so
- * the authoritative comparison is passphrase vs. passphrase.
- * Pure — the component decides how to present `state` (dot color / class).
+ * Compare the app's configured network against the connected wallet's network
+ * using passphrase. Keep pure, let component decide how to present state.
  */
 export function networkStatus(
 	address: string | null | undefined,
@@ -38,6 +36,8 @@ export function networkStatus(
 	// the app's own label when the wallet matches the configured passphrase (so a
 	// custom/standalone passphrase still reads as e.g. "Local" rather than
 	// "Unknown" in the `ok` case); the known `Networks` name; else "Unknown".
+  const networkName = !!walletPassphrase && walletPassphrase in Networks
+    ? formatNetworkName(passphraseToName[walletPassphrase])
 	const walletNetwork = !walletPassphrase
 		? ""
 		: walletPassphrase === networkPassphrase
