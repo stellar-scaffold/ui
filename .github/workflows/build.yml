@@ -43,6 +43,11 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      # Pin rustc to the CLI's required toolchain (see cli/rust-toolchain.toml).
+      # Without this, the "released, fast" binstall fallback below compiles
+      # against the runner's stale default rustc and fails on soroban-cli's
+      # MSRV bump.
+      - run: rustup toolchain install 1.93.0 && rustup default 1.93.0
       # Add the wasm32v1-none target for building contracts
       - run: rustup target add wasm32v1-none
       - run:
@@ -74,7 +79,10 @@ jobs:
         run: |
           if ! command -v stellar-scaffold &> /dev/null; then
             echo "stellar-scaffold not found, installing..."
-            cargo binstall stellar-scaffold-cli
+            # --locked so the source-build fallback uses the CLI's published
+            # Cargo.lock instead of resolving fresh soroban deps whose MSRV
+            # may outrun the pinned toolchain.
+            cargo binstall --locked stellar-scaffold-cli
           else
             echo "stellar-scaffold already installed. Clear cache to force reinstall."
           fi
