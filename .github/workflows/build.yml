@@ -43,8 +43,6 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      # Add the wasm32v1-none target for building contracts
-      - run: rustup target add wasm32v1-none
       - run:
           sudo apt-get update && sudo apt-get install -y libudev-dev
           libdbus-1-dev pkg-config
@@ -74,7 +72,10 @@ jobs:
         run: |
           if ! command -v stellar-scaffold &> /dev/null; then
             echo "stellar-scaffold not found, installing..."
-            cargo binstall stellar-scaffold-cli
+            # --locked so the source-build fallback uses the CLI's published
+            # Cargo.lock instead of resolving fresh soroban deps whose MSRV
+            # may outrun the pinned toolchain.
+            cargo binstall --locked stellar-scaffold-cli
           else
             echo "stellar-scaffold already installed. Clear cache to force reinstall."
           fi
