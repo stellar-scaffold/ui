@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "npm start",
     "prestart": "node scripts/dev-guard.mjs",
-    "start": "npm start --workspace app"
+    "start": "npm start --workspace app",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "workspaces": [
     "templates/*",
@@ -13,5 +16,8 @@
     "app-lib/clients/*",
     "e2e"
   ],
+  "devDependencies": {
+    "prettier": "^3.8.3"
+  },
   "prettier": "@theahaco/ts-config/prettier"
 }
