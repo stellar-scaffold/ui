@@ -36,8 +36,6 @@ export function networkStatus(
 	// the app's own label when the wallet matches the configured passphrase (so a
 	// custom/standalone passphrase still reads as e.g. "Local" rather than
 	// "Unknown" in the `ok` case); the known `Networks` name; else "Unknown".
-  const networkName = !!walletPassphrase && walletPassphrase in Networks
-    ? formatNetworkName(passphraseToName[walletPassphrase])
 	const walletNetwork = !walletPassphrase
 		? ""
 		: walletPassphrase === networkPassphrase
