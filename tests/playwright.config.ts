@@ -35,7 +35,7 @@ function resolveTargets(): Target[] {
 const targets = resolveTargets()
 
 export default defineConfig({
-	testDir: "./tests",
+	testDir: "./e2e",
 	reporter: "list",
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 2 : 0,
