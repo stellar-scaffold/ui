@@ -7,9 +7,6 @@ import { defaultModules } from "@creit.tech/stellar-wallets-kit/modules/utils"
 import { Horizon } from "@stellar/stellar-sdk"
 import { networkPassphrase, stellarNetwork } from "./env"
 
-// v2 is a fully static API. `init` is called once here at module load; the kit
-// owns its own localStorage persistence (active address, selected wallet) and
-// restores it on reload, so the templates no longer mirror that state by hand.
 StellarWalletsKit.init({
 	network: networkPassphrase as Networks,
 	modules: defaultModules(),
