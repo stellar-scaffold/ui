@@ -7,9 +7,7 @@ import {
 } from "@stellar-scaffold/app-lib"
 import { get, writable } from "svelte/store"
 
-// Writable state, driven entirely by Stellar-Wallets-Kit v2 state events. The
-// kit owns persistence and restoration, so there's no polling or manual
-// localStorage mirroring here.
+// Writable state
 const _address = writable<string | undefined>()
 const _networkPassphrase = writable<string | undefined>()
 const _balances = writable<MappedBalances>({})
