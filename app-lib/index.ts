@@ -8,4 +8,3 @@ export * from "./format" // shortAddress, formatNetworkName, networkStatus, Netw
 export * from "./friendbot" // getFriendbotUrl
 export * from "./subscription" // subscribeToEvents
 export * from "./wallet" // connectWallet, disconnectWallet, profileModal, signTransaction, onWalletStateChange, onWalletDisconnect, fetchBalances, wallet, MappedBalances, WalletState
-export { default as storage } from "./storage"
