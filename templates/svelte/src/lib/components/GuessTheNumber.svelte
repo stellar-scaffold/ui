@@ -19,6 +19,7 @@
 
 		result = "loading"
 
+                try {
 		const tx = await guessTheNumber.guess(
 			{ a_number: BigInt(guess), guesser: $address },
 			{ publicKey: $address },
@@ -32,6 +33,10 @@
 			result = txResult.unwrap() ? "success" : "failure"
 			await updateBalances()
 		}
+                } catch(e) {
+                  console.error(e)
+                  result = "failure"
+                }
 	}
 
 	function reset() {
