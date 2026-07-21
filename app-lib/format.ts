@@ -16,11 +16,13 @@ const passphraseToName: Record<string, string> = Object.fromEntries(
 	Object.entries(Networks).map(([name, passphrase]) => [passphrase, name]),
 )
 
-export type NetworkState = "disconnected" | "mismatch" | "ok"
+export type NetworkState = "disconnected" | "mismatch" | "ok" | "unverified"
 
 /**
  * Compare the app's configured network against the connected wallet's network
- * using passphrase. Keep pure, let component decide how to present state.
+ * using passphrase. Most wallets don't report their network (Wallets Kit issue
+ * #62) — a connected wallet with no passphrase is `unverified`, not a mismatch.
+ * Keep pure, let component decide how to present state.
  */
 export function networkStatus(
 	address: string | null | undefined,
@@ -50,6 +52,14 @@ export function networkStatus(
 			walletNetwork,
 			state: "disconnected",
 			title: "Connect your wallet using this network.",
+		}
+	}
+	if (!walletPassphrase) {
+		return {
+			appNetwork,
+			walletNetwork,
+			state: "unverified",
+			title: `This wallet doesn't report its network — make sure it is set to ${appNetwork}.`,
 		}
 	}
 	if (walletPassphrase !== networkPassphrase) {

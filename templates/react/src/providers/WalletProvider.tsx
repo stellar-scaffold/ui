@@ -1,6 +1,7 @@
 import {
 	fetchBalances,
 	type MappedBalances,
+	onWalletNetworkChange,
 	onWalletDisconnect,
 	onWalletStateChange,
 	signTransaction,
@@ -77,7 +78,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 	useEffect(() => {
 		const unsubscribeState = onWalletStateChange((state) => {
 			setAddress(state.address)
-			setNetworkPassphrase(state.networkPassphrase)
 			setIsPending(false)
 		})
 		const unsubscribeDisconnect = onWalletDisconnect(() => {
@@ -91,6 +91,16 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 			unsubscribeDisconnect()
 		}
 	}, [])
+
+	// Watch the wallet's own network while connected via polling function in case
+	// it differs from the dapp's configured network
+	useEffect(() => {
+		if (!address) {
+			setNetworkPassphrase(undefined)
+			return
+		}
+		return onWalletNetworkChange(setNetworkPassphrase)
+	}, [address])
 
 	const contextValue = useMemo(
 		() => ({

@@ -1,6 +1,7 @@
 import {
 	fetchBalances,
 	type MappedBalances,
+	onWalletNetworkChange,
 	onWalletDisconnect,
 	onWalletStateChange,
 	signTransaction,
@@ -30,12 +31,23 @@ export async function updateBalances() {
 	_balances.set(b)
 }
 
-// Fires immediately with current state (covering reload restore) and on every
-// change thereafter.
-onWalletStateChange(({ address, networkPassphrase }) => {
+// Mutable variable to cancel any previous polling for network changes
+let stopNetworkWatch: (() => void) | undefined
+
+onWalletStateChange(({ address }) => {
 	_address.set(address)
-	_networkPassphrase.set(networkPassphrase)
 	_isPending.set(false)
+	stopNetworkWatch?.()
+	stopNetworkWatch = undefined
+	if (address) {
+		stopNetworkWatch = onWalletNetworkChange((networkPassphrase) => {
+			_networkPassphrase.set(networkPassphrase)
+			// The same address holds different balances per network.
+			void updateBalances()
+		})
+	} else {
+		_networkPassphrase.set(undefined)
+	}
 	// Refetch on every state event: the same address holds different balances
 	// per network, so a network change can change what's funded.
 	void updateBalances()

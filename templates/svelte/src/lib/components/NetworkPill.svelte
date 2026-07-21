@@ -8,6 +8,7 @@
 <div
 	class="network-pill"
 	class:network-pill--mismatch={status.state === "mismatch"}
+	class:network-pill--unverified={status.state === "unverified"}
 	title={status.title}
 >
 	<span class="network-dot network-dot--{status.state}"></span>

@@ -24,6 +24,58 @@ export const disconnectWallet = () => StellarWalletsKit.disconnect()
 /** Sign a transaction with the active wallet. Passed to generated contract clients. */
 export const signTransaction = StellarWalletsKit.signTransaction
 
+/**
+ * Use the wallet's reported network if it supports it, otherwise flag the
+ * wallet as unsupported and try transactions anyways, falling back to error
+ * parsing to determine a network mismatch in case of problems.
+ */
+export const getWalletNetwork = async (): Promise<{
+	supported: boolean
+	networkPassphrase?: string
+}> => {
+	try {
+		const { networkPassphrase } = await StellarWalletsKit.getNetwork()
+		return { supported: true, networkPassphrase }
+	} catch {
+		return { supported: false }
+	}
+}
+
+/**
+ * Watch the network the wallet itself reports. Extensions emit no event when
+ * the user switches networks, so this polls `getNetwork` — the only available
+ * signal. The callback fires immediately with the current passphrase
+ * (`undefined` when the wallet can't report one) and again on every change.
+ *
+ * Returns a cleanup function that stops polling.
+ */
+export const onWalletNetworkChange = (
+	cb: (networkPassphrase: string | undefined) => void,
+	pollInterval = 3000,
+): (() => void) => {
+	let last: string | undefined
+	let first = true
+	let timeoutId: ReturnType<typeof setTimeout> | null = null
+	let stopped = false
+
+	const poll = async () => {
+		const { networkPassphrase } = await getWalletNetwork()
+		if (stopped) return
+		if (first || networkPassphrase !== last) {
+			first = false
+			last = networkPassphrase
+			cb(networkPassphrase)
+		}
+		timeoutId = setTimeout(() => void poll(), pollInterval)
+	}
+	void poll()
+
+	return () => {
+		stopped = true
+		if (timeoutId != null) clearTimeout(timeoutId)
+	}
+}
+
 export interface WalletState {
 	address: string | undefined
 	networkPassphrase: string | undefined

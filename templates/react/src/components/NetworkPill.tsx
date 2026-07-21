@@ -8,7 +8,7 @@ const NetworkPill: React.FC = () => {
 
 	return (
 		<div
-			className={`network-pill${state === "mismatch" ? " network-pill--mismatch" : ""}`}
+			className={`network-pill${state === "mismatch" || state === "unverified" ? ` network-pill--${state}` : ""}`}
 			title={title}
 		>
 			<span className={`network-dot network-dot--${state}`} />
