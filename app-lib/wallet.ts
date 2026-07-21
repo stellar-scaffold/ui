@@ -7,9 +7,18 @@ import { defaultModules } from "@creit.tech/stellar-wallets-kit/modules/utils"
 import { Horizon } from "@stellar/stellar-sdk"
 import { networkPassphrase, stellarNetwork } from "./env"
 
+// These wallets work on Local and Futurenet while the rest enforce or fail on
+// any networks beside Testnet and Mainnet. Filter below based on dApp config.
+const CUSTOM_NETWORK_WALLETS = new Set(["freighter", "xbull", "hana"])
+
 StellarWalletsKit.init({
 	network: networkPassphrase as Networks,
-	modules: defaultModules(),
+	modules:
+		stellarNetwork === "LOCAL" || stellarNetwork === "FUTURENET"
+			? defaultModules({
+					filterBy: (m) => CUSTOM_NETWORK_WALLETS.has(m.productId),
+				})
+			: defaultModules(),
 })
 
 /** Open the built-in wallet-selection modal; resolves once a wallet is connected. */
