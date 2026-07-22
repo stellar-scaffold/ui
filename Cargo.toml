@@ -9,20 +9,13 @@ license = "Apache-2.0"
 repository = "https://github.com/stellar-scaffold/cli"
 version = "0.0.1"
 
-[workspace.dependencies.soroban-sdk]
-version = "26.1.0"
-
-[workspace.dependencies.stellar-access]
-git = "https://github.com/OpenZeppelin/stellar-contracts"
-tag = "v0.7.2"
-
-[workspace.dependencies.stellar-macros]
-git = "https://github.com/OpenZeppelin/stellar-contracts"
-tag = "v0.7.2"
-
-[workspace.dependencies.stellar-tokens]
-git = "https://github.com/OpenZeppelin/stellar-contracts"
-tag = "v0.7.2"
+[workspace.dependencies]
+soroban-sdk = "26.1.0"
+stellar-access = "0.7.2"
+stellar-macros = "0.7.2"
+stellar-tokens = "0.7.2"
+stellar-registry = "0.0.11"
+stellar-xdr = "26.0.1"
 
 [profile.release]
 opt-level = "z"

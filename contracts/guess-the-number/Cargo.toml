@@ -17,8 +17,8 @@ doctest = false
 
 [dependencies]
 soroban-sdk = { workspace = true }
-stellar-registry = "0.0.4"
+stellar-registry = { workspace = true }
 
 [dev-dependencies]
-stellar-xdr = { version = "23.0.0", features = ["curr", "serde"] }
+stellar-xdr = { workspace = true, features = ["curr", "serde"] }
 soroban-sdk = { workspace = true, features = ["testutils"] }
