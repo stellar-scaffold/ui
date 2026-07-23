@@ -56,9 +56,9 @@ export const getWalletNetwork = async (): Promise<{
  * signal. The callback fires immediately with the current passphrase
  * (`undefined` when the wallet can't report one) and again on every change.
  *
- * Returns a cleanup function that stops polling.
+ * Returns a cleanup function that stops polling. Only used in `onWalletChange`
  */
-export const onWalletNetworkChange = (
+const onWalletNetworkChange = (
 	cb: (networkPassphrase: string | undefined) => void,
 	pollInterval = 3000,
 ): (() => void) => {
@@ -91,24 +91,49 @@ export interface WalletState {
 }
 
 /**
- * Subscribe to wallet state changes (active address / network). The callback
- * fires immediately with the current state on subscribe (covering reload
- * restore) and on every subsequent change. Returns an unsubscribe function.
- * Framework-agnostic — wrap in onMount / useEffect.
+ * Subscribe to full wallet state: connected address and network. Fires
+ * immediately with the current state on subscribe (covering reload restore)
+ * and on every subsequent change: connect, disconnect, or the wallet
+ * switching networks (detected via polling, see `onWalletNetworkChange`).
+ *
+ * Returns an framework-agnostic unsubscribe function.
  */
-export const onWalletStateChange = (
+export const onWalletChange = (
 	cb: (state: WalletState) => void,
-): (() => void) =>
-	StellarWalletsKit.on(KitEventType.STATE_UPDATED, (event) =>
-		cb({
-			address: event.payload.address,
-			networkPassphrase: event.payload.networkPassphrase,
-		}),
+): (() => void) => {
+	let stopPoll: (() => void) | undefined
+
+	const stopState = StellarWalletsKit.on(
+		KitEventType.STATE_UPDATED,
+		(event) => {
+			stopPoll?.()
+			stopPoll = undefined
+			// NOTE: `event.networkPassphrase` is the app's configured network, not
+			// the wallet's connected network. Disregard it and start our own polling
+			// logic below if we have an address.
+			const { address } = event.payload
+			if (address) {
+				stopPoll = onWalletNetworkChange((networkPassphrase) =>
+					cb({ address, networkPassphrase }),
+				)
+			} else {
+				cb({ address: undefined, networkPassphrase: undefined })
+			}
+		},
 	)
 
-/** Subscribe to wallet disconnects. Returns an unsubscribe function. */
-export const onWalletDisconnect = (cb: () => void): (() => void) =>
-	StellarWalletsKit.on(KitEventType.DISCONNECT, cb)
+	const stopDisconnect = StellarWalletsKit.on(KitEventType.DISCONNECT, () => {
+		stopPoll?.()
+		stopPoll = undefined
+		cb({ address: undefined, networkPassphrase: undefined })
+	})
+
+	return () => {
+		stopState()
+		stopDisconnect()
+		stopPoll?.()
+	}
+}
 
 function getHorizonHost(mode: string) {
 	switch (mode) {

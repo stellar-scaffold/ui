@@ -66,10 +66,10 @@ instance of the contract client and import `rpcUrl`/`networkPassphrase` from
   dynamically load all contract clients. Renders contract methods as interactive
   forms using JSON Schema from contract metadata.
 - **`src/providers/WalletProvider.tsx`**: Manages wallet connection state via
-  Stellar-Wallets-Kit v2 state events (`onWalletStateChange` /
-  `onWalletDisconnect` from `@stellar-scaffold/app-lib`). No polling — the kit
-  owns persistence and restores on reload. Exposes `address`, `balances`,
-  `networkPassphrase`, `isPending`, `signTransaction`, `updateBalances`.
+  `onWalletChange` from `@stellar-scaffold/app-lib` (single subscription
+  covering connect/disconnect/network-switch). The kit owns persistence and
+  restores on reload. Exposes `address`, `balances`, `networkPassphrase`,
+  `isPending`, `signTransaction`, `updateBalances`.
 - **`src/hooks/useWallet.ts`**: Consume `WalletContext` in components.
 - Wallet primitives (`StellarWalletsKit` init, `connectWallet`,
   `disconnectWallet`, `profileModal`, `signTransaction`, `fetchBalances`) live

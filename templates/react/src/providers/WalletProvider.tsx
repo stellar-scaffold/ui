@@ -1,9 +1,7 @@
 import {
 	fetchBalances,
 	type MappedBalances,
-	onWalletNetworkChange,
-	onWalletDisconnect,
-	onWalletStateChange,
+	onWalletChange,
 	signTransaction,
 } from "@stellar-scaffold/app-lib"
 import { createContext, useCallback, useEffect, useMemo, useState } from "react"
@@ -72,35 +70,16 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 		void updateBalances()
 	}, [updateBalances, networkPassphrase])
 
-	// Subscribe to Stellar-Wallets-Kit v2 state events. The callbacks fire
-	// immediately with the current state (covering reload restore) and on every
-	// change thereafter. The kit owns persistence — no polling needed.
+	// Subscribe to wallet state. Gets values immediately and on every subsequent
+	// change: connect, disconnect, and the wallet switching networks.
 	useEffect(() => {
-		const unsubscribeState = onWalletStateChange((state) => {
+		return onWalletChange((state) => {
 			setAddress(state.address)
+			setNetworkPassphrase(state.networkPassphrase)
 			setIsPending(false)
+			if (!state.address) setBalances({})
 		})
-		const unsubscribeDisconnect = onWalletDisconnect(() => {
-			setAddress(undefined)
-			setNetworkPassphrase(undefined)
-			setBalances({})
-		})
-
-		return () => {
-			unsubscribeState()
-			unsubscribeDisconnect()
-		}
 	}, [])
-
-	// Watch the wallet's own network while connected via polling function in case
-	// it differs from the dapp's configured network
-	useEffect(() => {
-		if (!address) {
-			setNetworkPassphrase(undefined)
-			return
-		}
-		return onWalletNetworkChange(setNetworkPassphrase)
-	}, [address])
 
 	const contextValue = useMemo(
 		() => ({

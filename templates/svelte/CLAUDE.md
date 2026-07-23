@@ -60,9 +60,9 @@ instance of the contract client and import `rpcUrl`/`networkPassphrase` from
   Scaffold CLI. `util.ts` reads env vars with Zod validation and exports
   `rpcUrl`, `networkPassphrase`, `network`, and `labPrefix()`.
 - **`src/lib/stores/wallet.ts`**: Svelte writable stores for wallet state,
-  driven by Stellar-Wallets-Kit v2 state events (`onWalletStateChange` /
-  `onWalletDisconnect` from `@stellar-scaffold/app-lib`). No polling — the kit
-  owns persistence and restores on reload; the callbacks fire immediately with
+  driven by `onWalletChange` from `@stellar-scaffold/app-lib` (single
+  subscription covering connect/disconnect/network-switch). The kit owns
+  persistence and restores on reload; the callback fires immediately with
   current state on subscribe. Exports `address`, `balances`,
   `networkPassphrase`, `isPending`, `signTransaction`, `updateBalances()`.
 - **`src/lib/stores/notifications.ts`**: `writable<Notification[]>` store with

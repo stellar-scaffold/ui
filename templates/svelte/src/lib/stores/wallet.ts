@@ -1,9 +1,7 @@
 import {
 	fetchBalances,
 	type MappedBalances,
-	onWalletNetworkChange,
-	onWalletDisconnect,
-	onWalletStateChange,
+	onWalletChange,
 	signTransaction,
 } from "@stellar-scaffold/app-lib"
 import { get, writable } from "svelte/store"
@@ -31,30 +29,13 @@ export async function updateBalances() {
 	_balances.set(b)
 }
 
-// Mutable variable to cancel any previous polling for network changes
-let stopNetworkWatch: (() => void) | undefined
-
-onWalletStateChange(({ address }) => {
+// Subscribe to wallet state. Gets values immediately and on every subsequent
+// change: connect, disconnect, and the wallet switching networks.
+onWalletChange(({ address, networkPassphrase: net }) => {
 	_address.set(address)
+	_networkPassphrase.set(net)
 	_isPending.set(false)
-	stopNetworkWatch?.()
-	stopNetworkWatch = undefined
-	if (address) {
-		stopNetworkWatch = onWalletNetworkChange((networkPassphrase) => {
-			_networkPassphrase.set(networkPassphrase)
-			// The same address holds different balances per network.
-			void updateBalances()
-		})
-	} else {
-		_networkPassphrase.set(undefined)
-	}
 	// Refetch on every state event: the same address holds different balances
 	// per network, so a network change can change what's funded.
 	void updateBalances()
-})
-
-onWalletDisconnect(() => {
-	_address.set(undefined)
-	_networkPassphrase.set(undefined)
-	_balances.set({})
 })
