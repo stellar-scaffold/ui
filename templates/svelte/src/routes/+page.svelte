@@ -7,10 +7,14 @@
 	<div class="intro">
 		<h1>Yay! You're on Stellar Svelte!</h1>
 		<p>
-			A local development template designed to help you build dApps on the Stellar network. This
-			environment lets you easily test wallet connections, smart contract interactions, transaction
-			verifications, etc.
-			<a href="https://scaffoldstellar.org/docs/intro" target="_blank" rel="noreferrer">
+			A local development template designed to help you build dApps on the
+			Stellar network. This environment lets you easily test wallet connections,
+			smart contract interactions, transaction verifications, etc.
+			<a
+				href="https://scaffoldstellar.org/docs/intro"
+				target="_blank"
+				rel="noreferrer"
+			>
 				View docs
 			</a>
 		</p>
@@ -19,7 +23,8 @@
 	<div class="card">
 		<h2>Sample Contracts</h2>
 		<p>
-			<strong>Guess The Number:</strong> Interact with the sample contract from the
+			<strong>Guess The Number:</strong> Interact with the sample contract from
+			the
 			<a
 				href="https://scaffoldstellar.org/docs/tutorial/overview"
 				target="_blank"
@@ -47,7 +52,9 @@
 		<h2>Start Building</h2>
 		<ol>
 			<li>Add your contract under <code>/src/lib/contracts</code></li>
-			<li>Contracts are built by Scaffold when you run <code>npm start</code></li>
+			<li>
+				Contracts are built by Scaffold when you run <code>npm start</code>
+			</li>
 			<li>Changes are rebuilt automatically by <code>Vite</code></li>
 			<li>Interact with your contract immediately in the Contract Explorer</li>
 		</ol>
@@ -59,8 +66,10 @@
 				rel="noreferrer">Youtube tutorial</a
 			><br />
 			Get inspired by our showcase of
-			<a href="https://scaffoldstellar.org/showcase" target="_blank" rel="noreferrer"
-				>Example frontends</a
+			<a
+				href="https://scaffoldstellar.org/showcase"
+				target="_blank"
+				rel="noreferrer">Example frontends</a
 			><br />
 			Ready to deploy?
 			<a
@@ -73,12 +82,18 @@
 
 	<section class="cards">
 		<div class="card">
-			<p>Invoke your smart contract using the <a href="/debug">Contract Explorer</a></p>
+			<p>
+				Invoke your smart contract using the <a href="/debug"
+					>Contract Explorer</a
+				>
+			</p>
 		</div>
 		<div class="card">
 			<p>
 				Browse your local transactions with the
-				<a href={labPrefix()} target="_blank" rel="noreferrer">Transaction Explorer</a>
+				<a href={labPrefix()} target="_blank" rel="noreferrer"
+					>Transaction Explorer</a
+				>
 			</p>
 		</div>
 	</section>

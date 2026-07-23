@@ -9,7 +9,7 @@
 		if (!$address || isPending) return
 		isPending = true
 		const { ok, message } = await fundAccount($address)
-                if (ok) await updateBalances()
+		if (ok) await updateBalances()
 		addNotification(message, ok ? "success" : "error")
 		isPending = false
 	}

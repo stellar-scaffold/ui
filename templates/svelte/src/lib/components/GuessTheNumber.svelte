@@ -19,24 +19,24 @@
 
 		result = "loading"
 
-                try {
-		const tx = await guessTheNumber.guess(
-			{ a_number: BigInt(guess), guesser: $address },
-			{ publicKey: $address },
-		)
+		try {
+			const tx = await guessTheNumber.guess(
+				{ a_number: BigInt(guess), guesser: $address },
+				{ publicKey: $address },
+			)
 
-		const { result: txResult } = await tx.signAndSend({ signTransaction })
+			const { result: txResult } = await tx.signAndSend({ signTransaction })
 
-		if (txResult.isErr()) {
-			console.error(txResult.unwrapErr())
-		} else {
-			result = txResult.unwrap() ? "success" : "failure"
-			await updateBalances()
+			if (txResult.isErr()) {
+				console.error(txResult.unwrapErr())
+			} else {
+				result = txResult.unwrap() ? "success" : "failure"
+				await updateBalances()
+			}
+		} catch (e) {
+			console.error(e)
+			result = "failure"
 		}
-                } catch(e) {
-                  console.error(e)
-                  result = "failure"
-                }
 	}
 
 	function reset() {
