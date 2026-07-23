@@ -49,7 +49,6 @@
       "prettier --write --ignore-unknown"
     ]
   },
-  "prettier": "@theahaco/ts-config/prettier",
   "engines": {
     "stellar-scaffold": ">=0.0.24"
   }
