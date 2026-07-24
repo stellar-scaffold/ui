@@ -27,8 +27,8 @@ jobs:
         run: node scripts/check-dep-parity.mjs
 
       - run: npm ci
-      - run: npm run lint --workspaces --if-present
-      - run: npx prettier . --check
+      - run: npm run lint
+      - run: npm run format:check
 
       # ---- Slow path: CLI toolchain, local network, contract codegen ----
       - uses: actions/cache@v3

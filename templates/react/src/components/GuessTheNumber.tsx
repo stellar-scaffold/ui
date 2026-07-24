@@ -22,18 +22,23 @@ export const GuessTheNumber = () => {
 
 		setResult("loading")
 
-		const tx = await guessTheNumber.guess(
-			{ a_number: BigInt(guess), guesser: address },
-			{ publicKey: address },
-		)
+		try {
+			const tx = await guessTheNumber.guess(
+				{ a_number: BigInt(guess), guesser: address },
+				{ publicKey: address },
+			)
 
-		const { result } = await tx.signAndSend({ signTransaction })
+			const { result } = await tx.signAndSend({ signTransaction })
 
-		if (result.isErr()) {
-			console.error(result.unwrapErr())
-		} else {
-			setResult(result.unwrap() ? "success" : "failure")
-			await updateBalances()
+			if (result.isErr()) {
+				console.error(result.unwrapErr())
+			} else {
+				setResult(result.unwrap() ? "success" : "failure")
+				await updateBalances()
+			}
+		} catch (e) {
+			console.error(e)
+			setResult("failure")
 		}
 	}
 

@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { networkStatus } from "@stellar-scaffold/app-lib"
-	import { address, network } from "../stores/wallet"
+	import { address, networkPassphrase } from "../stores/wallet"
 
-	const status = $derived(networkStatus($address, $network))
+	const status = $derived(networkStatus($address, $networkPassphrase))
 </script>
 
 <div
 	class="network-pill"
 	class:network-pill--mismatch={status.state === "mismatch"}
+	class:network-pill--unverified={status.state === "unverified"}
 	title={status.title}
 >
 	<span class="network-dot network-dot--{status.state}"></span>

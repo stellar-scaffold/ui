@@ -12,13 +12,12 @@
 	<header class="app-header">
 		<span class="logo">Scaffold</span>
 		<nav class="header-nav">
-			<a
-				href="/debug"
-				class:active={$page.url.pathname.startsWith("/debug")}
-			>
+			<a href="/debug" class:active={$page.url.pathname.startsWith("/debug")}>
 				Contract Explorer
 			</a>
-			<a href={labPrefix()} target="_blank" rel="noreferrer">Transaction Explorer</a>
+			<a href={labPrefix()} target="_blank" rel="noreferrer"
+				>Transaction Explorer</a
+			>
 		</nav>
 		<ConnectAccount />
 	</header>
@@ -39,14 +38,20 @@
 				target="_blank"
 				rel="noreferrer">Tutorial</a
 			>
-			<a href="https://scaffoldstellar.org" target="_blank" rel="noreferrer">View docs</a>
+			<a href="https://scaffoldstellar.org" target="_blank" rel="noreferrer"
+				>View docs</a
+			>
 		</nav>
 	</footer>
 </div>
 
 <div class="notification-container">
 	{#each $notifications as n (n.id)}
-		<div class="notification {n.isVisible ? 'slide-in' : 'slide-out'} notification-{n.type}">
+		<div
+			class="notification {n.isVisible
+				? 'slide-in'
+				: 'slide-out'} notification-{n.type}"
+		>
 			{n.message}
 		</div>
 	{/each}

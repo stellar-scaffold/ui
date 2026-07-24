@@ -6,13 +6,14 @@ import { useWallet } from "../hooks/useWallet.ts"
 const FundAccountButton: React.FC = () => {
 	const { addNotification } = useNotification()
 	const [isPending, startTransition] = useTransition()
-	const { address } = useWallet()
+	const { address, updateBalances } = useWallet()
 
 	if (!address) return null
 
 	const handleFundAccount = () => {
 		startTransition(async () => {
 			const { ok, message } = await fundAccount(address)
+			if (ok) await updateBalances()
 			addNotification(message, ok ? "success" : "error")
 		})
 	}

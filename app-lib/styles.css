@@ -121,7 +121,8 @@ dialog::backdrop {
 	gap: 6px;
 }
 
-.network-pill--mismatch {
+.network-pill--mismatch,
+.network-pill--unverified {
 	cursor: help;
 }
 
@@ -139,6 +140,10 @@ dialog::backdrop {
 
 .network-dot--mismatch {
 	background-color: #ff3b30;
+}
+
+.network-dot--unverified {
+	background-color: #ffb020;
 }
 
 .network-dot--disconnected {
