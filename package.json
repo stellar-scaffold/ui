@@ -17,7 +17,7 @@
     "e2e"
   ],
   "devDependencies": {
-    "prettier": "^3.8.3"
+    "prettier": "^3.9.5"
   },
   "prettier": "@theahaco/ts-config/prettier"
 }
