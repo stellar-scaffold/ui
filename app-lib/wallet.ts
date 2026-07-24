@@ -35,8 +35,12 @@ export const signTransaction = StellarWalletsKit.signTransaction
 
 /**
  * Use the wallet's reported network if it supports it, otherwise flag the
- * wallet as unsupported and try transactions anyways, falling back to error
- * parsing to determine a network mismatch in case of problems.
+ * wallet as unsupported. Note that even if a wallet is `unsupported`, this
+ * only means it does not support the `getNetwork` function. It *may* still
+ * support passing `networkPassphrase` to `signTransaction`. For the wallets
+ * that do not support the `networkPassphrase` argument to `signTransaction`,
+ * you can fall back to error parsing to determine if `signTransaction`
+ * failures were due to network mismatch.
  */
 export const getWalletNetwork = async (): Promise<{
 	supported: boolean
