@@ -4,6 +4,7 @@ on:
   push:
     branches: ["main"]
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 env:
   CARGO_TERM_COLOR: always
@@ -49,23 +50,34 @@ jobs:
       # Install binstall to quickly install stellar-scaffold-cli
       - name: Install cargo-binstall
         uses: cargo-bins/cargo-binstall@main
-      # If this PR's branch name also exists on the CLI repo, build the CLI from
-      # that branch so coordinated cross-repo changes can go green before the CLI
-      # is released. Otherwise binstall the released CLI (fast path).
+      # Label a PR `cross-repo` to build the CLI from a same-named branch on the
+      # CLI repo, so coordinated cross-repo changes can go green before the CLI
+      # is released. Unlabeled PRs always use the released CLI (fast path).
       - name: Resolve CLI source
         id: cli
+        env:
+          CROSS_REPO:
+            ${{ contains(github.event.pull_request.labels.*.name, 'cross-repo')
+            }}
         run: |
           REF="${{ github.head_ref }}"
-          SHA=$(git ls-remote --heads \
-            https://github.com/theahaco/scaffold-stellar "$REF" 2>/dev/null \
-            | cut -f1)
-          if [ -n "$REF" ] && [ -n "$SHA" ]; then
-            echo "ref=$REF" >> "$GITHUB_OUTPUT"
-            echo "sha=$SHA" >> "$GITHUB_OUTPUT"
-            echo "Building CLI from branch $REF ($SHA)"
-          else
-            echo "Using released CLI (binstall)"
+          if [ "$CROSS_REPO" != "true" ]; then
+            echo "Using released CLI (binstall)."
+            echo "To build against a CLI branch, label this PR 'cross-repo'."
+            exit 0
           fi
+          SHA=$(git ls-remote --heads \
+            https://github.com/stellar-scaffold/cli "$REF" 2>/dev/null \
+            | cut -f1)
+          if [ -z "$SHA" ]; then
+            echo "::error::PR is labeled 'cross-repo' but no branch named" \
+              "'$REF' exists on stellar-scaffold/cli. Push that branch," \
+              "or remove the label to use the released CLI."
+            exit 1
+          fi
+          echo "ref=$REF" >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Building CLI from branch $REF ($SHA)"
       # Check for stellar-scaffold-cli binary and install if not present
       - name: Install stellar-scaffold (released, fast)
         if: steps.cli.outputs.ref == ''
@@ -101,7 +113,7 @@ jobs:
           # clone as the working dir, rustup honors the pinned toolchain
           # (auto-installed on demand).
           git clone --depth 1 --branch "${{ steps.cli.outputs.ref }}" \
-            https://github.com/theahaco/scaffold-stellar "$RUNNER_TEMP/cli-src"
+            https://github.com/stellar-scaffold/cli "$RUNNER_TEMP/cli-src"
           cd "$RUNNER_TEMP/cli-src"
           cargo install --path crates/stellar-scaffold-cli --locked
       - name: Start Stellar local network
@@ -113,14 +125,19 @@ jobs:
           mkdir -p .config/stellar/identity
           echo 'secret_key = "SC5O7VZUXDJ6JBDSZ74DSERXL7W3Y5LTOAMRF7RQRL3TAGAPS7LUVG3L"' > .config/stellar/identity/me.toml
       - name: Build with Scaffold and build client packages
-        run:
-          STELLAR_SCAFFOLD_ENV=development stellar-scaffold build
-          --build-clients 2>&1 | tee build_clients.log
+        run: |
+          # Setting pipefail so a failed build's exit status isn't overwritten
+          # by a successful call of `tee`
+          set -o pipefail
+          STELLAR_SCAFFOLD_ENV=development stellar-scaffold build \
+            --build-clients 2>&1 | tee build_clients.log
       - name: Check client generation summary
         run: |
           # Extract the number after "Failed: "
           FAILED=$(grep -Eo "Failed: [0-9]+" build_clients.log | awk '{print $2}')
           if [ -z "$FAILED" ]; then
+            # Only reachable when the build exited 0, so a missing summary line
+            # means nothing failed rather than that the generator died early.
             echo "Could not find 'Failed: N' in build_clients.log, all clients succeeded."
             exit 0
           fi
@@ -129,6 +146,26 @@ jobs:
             echo "Check the \"Build with Scaffold\" step logs."
             exit 1
           fi
+      # Assert that client generation worked by checking the actual build
+      # artifacts rather than relying on exit status, which could still be 0
+      # even if nothing was built.
+      - name: Check generated clients
+        run: |
+          INDEX=app-lib/clients/index.ts
+          if [ ! -s "$INDEX" ]; then
+            echo "Expected $INDEX to exist and be non-empty after client generation."
+            exit 1
+          fi
+          # Count one exported const per contract
+          EXPECTED=$(find contracts -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
+          ACTUAL=$(grep -c "^export const " "$INDEX" || true)
+          if [ "$ACTUAL" -ne "$EXPECTED" ]; then
+            echo "Expected $EXPECTED client(s) in $INDEX, found $ACTUAL."
+            echo "Partial client generation, check the \"Build with Scaffold\" step."
+            grep "^export const " "$INDEX" || echo "(no exports)"
+            exit 1
+          fi
+          echo "Generated $ACTUAL client(s)."
       - run: npm run build --workspaces --if-present
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium

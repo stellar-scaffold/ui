@@ -32,7 +32,7 @@ export function subscribeToEvents(
 	if (!paging[id]) paging[id] = {}
 	const page = paging[id]
 
-	let timeoutId: NodeJS.Timeout | null = null
+	let timeoutId: ReturnType<typeof setTimeout> | null = null
 	let stopped = false
 
 	async function pollEvents(): Promise<void> {
