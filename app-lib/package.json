@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.5.0",
-    "@stellar/stellar-sdk": "^16.1.0",
-    "zod": "^4.3.5"
+    "@stellar/stellar-sdk": "^16.2.0",
+    "zod": "^4.4.3"
   }
 }
