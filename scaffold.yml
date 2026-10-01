@@ -1,17 +1,85 @@
-version: 1
+version: 2
 
 # Scaffold CLI Configuration
-config:
+project:
   # Your Rust/Soroban contract source.
-  # contracts_dir: contracts
+  contracts-dir: contracts
 
-  # The generated TypeScript contract layer your app imports. The CLI writes
-  # and regenerates everything here on build/redeploy, so you normally don't
-  # edit it by hand:
-  #   - app-lib/clients/<name>/   one generated Binding package per contract
-  #   - app-lib/clients/index.ts  one flattened file that instantiates every
-  #                               Contract Client, imported in app code as
-  #                               `@stellar-scaffold/app-lib/clients`
+  # Generated TypeScript packages to communicate with your contracts
+  # imported as `@stellar-scaffold/app-lib/clients`:
+  #   - app-lib/clients/<name>/   one generated binding package per contract
+  #   - app-lib/clients/index.ts  instantiates and exports every client
+  #
   # To customize a client, import it into your own code under app/ instead of
   # editing the generated file. Everything here is gitignored except .gitkeep.
-  # clients_dir: app-lib/clients
+  clients-dir: app-lib/clients
+
+# Stellar Networks used by your app. Pick one with `--network <name>` or
+# STELLAR_NETWORK; the default is `local`. Built-in names (local, testnet,
+# futurenet, mainnet) get their RPC URL and passphrase from stellar-cli.
+networks:
+  # Using the Stellar-Quickstart Docker container
+  local:
+    # Created and funded on first build, the first account will sign deploys
+    accounts: [me]
+
+  testnet:
+    # Funded with Friendbot on first build. Keep testnet keys separate from
+    # local ones, as you would for mainnet.
+    accounts: [testnet-user]
+    # Public networks don't deploy unless you opt in
+    allow-deploy: true
+
+  # mainnet:
+  #   # stellar-cli has no default mainnet RPC; bring your own
+  #   rpc-url: https://your-rpc-provider.example
+  #   rpc-headers:
+  #     Authorization: "Bearer ${env.MAINNET_RPC_TOKEN}"
+  #   accounts: [mainnet-user]
+
+# Contracts to build, deploy, and generate clients for. Keys directly under a
+# contract are defaults for every network it lists; entries under `networks:`
+# override them. A contract only exists on the networks it lists, so building
+# another network skips it and leaves it out of the generated clients.
+contracts:
+  guess-the-number:
+    type: workspace
+    source: guess-the-number # the crate's package name
+    args:
+      admin: ${account.me}
+    # Contract methods called after deploy; they take no arguments.
+    after-deploy: [reset]
+    networks:
+      local:
+      testnet:
+        # Accounts belong to a network, so testnet signs with its own
+        args:
+          admin: ${account.testnet-user}
+      # Don't deploy to mainnet from a dev loop; point at a deployment you
+      # made and reviewed separately
+      # mainnet:
+      #   type: contract
+      #   source: C...  # the deployed contract's ID
+
+  fungible-allowlist:
+    type: workspace
+    source: fungible-allowlist-example
+    args:
+      name: ExampleToken
+      symbol: EXT
+      admin: ${account.me}
+      manager: ${account.me}
+      initial_supply: 1000000000000000000000000
+    networks:
+      local:
+
+  nft-enumerable:
+    type: workspace
+    source: nft-enumerable-example
+    args:
+      uri: https://example.com/nft/
+      name: ExampleNFT
+      symbol: ENFT
+      owner: ${account.me}
+    networks:
+      local:

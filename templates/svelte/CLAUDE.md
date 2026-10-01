@@ -52,7 +52,7 @@ instance of the contract client and import `rpcUrl`/`networkPassphrase` from
 - `.env` (copy from `.env.example`): Runtime env vars for the frontend, prefixed
   with `PUBLIC_` to be exposed by Vite
 - `scaffold.yml`: Stellar Scaffold CLI config defining networks, accounts, and
-  contracts per environment
+  the contracts deployed to each network
 
 ### Important directories
 
