@@ -1,9 +1,9 @@
-version: 1
+version: 2
 
 # Scaffold CLI Configuration
-config:
+project:
   # Your Rust/Soroban contract source.
-  # contracts_dir: contracts
+  contracts-dir: contracts
 
   # The generated TypeScript contract layer your app imports. The CLI writes
   # and regenerates everything here on build/redeploy, so you normally don't
@@ -14,4 +14,76 @@ config:
   #                               `@stellar-scaffold/app-lib/clients`
   # To customize a client, import it into your own code under app/ instead of
   # editing the generated file. Everything here is gitignored except .gitkeep.
-  # clients_dir: app-lib/clients
+  clients-dir: app-lib/clients
+
+# Every network your app talks to. Built-in names (local, testnet, futurenet,
+# mainnet) get their RPC URL and passphrase from stellar-cli; any other name
+# must set both, or `extends` a network that does.
+networks:
+  local:
+    # Created and funded on first build. With several accounts, the first
+    # signs deploys unless `default-account` says otherwise.
+    accounts: [me]
+    # start-container defaults to true for the local (standalone) passphrase.
+
+  testnet:
+    accounts: [testnet-user]
+    # allow-deploy defaults to false on testnet, futurenet and mainnet: treat
+    # testnet as a rehearsal for mainnet and reference existing deployments.
+
+  # A second setup on the testnet chain, with its own accounts and contracts.
+  # Explicit settings like allow-deploy are inherited through `extends`.
+  preview:
+    extends: testnet
+    accounts: [preview-deployer]
+    allow-deploy: true
+
+  mainnet:
+    # stellar-cli has no default mainnet RPC; bring your own.
+    rpc-url: https://our-custom-rpc-provider.cool
+    rpc-headers:
+      Authorization: "Bearer ${env.MAINNET_RPC_TOKEN:-}"
+    accounts: [official-team-account]
+
+# Contracts to generate clients for. Keys directly under a contract are
+# defaults for every network listed under its `networks:`; entries there
+# override them. A contract only exists on the networks it lists.
+contracts:
+  fungible-allowlist:
+    type: workspace                     # a crate in contracts-dir, built and deployed
+    source: fungible-allowlist-example  # the crate's package name
+    # Constructor arguments by parameter name. Wide integers (i128, u256) can
+    # be written unquoted.
+    args:
+      name: ExampleToken
+      symbol: EXT
+      admin: ${account.me}
+      manager: ${account.me}
+      initial_supply: 1000000000000000000000000
+    networks:
+      local: {}
+
+  nft-enumerable:
+    type: workspace
+    source: nft-enumerable-example
+    args:
+      uri: https://example.com/nft/
+      name: ExampleNFT
+      symbol: ENFT
+      owner: ${account.me}
+    networks:
+      local: {}
+
+  guess-the-number:
+    type: workspace
+    source: guess-the-number
+    args:
+      admin: ${account.me}
+    # Methods to call after deploy. They take no arguments; anything more
+    # complex goes in an `after-deploy-script`.
+    after-deploy: [reset]
+    networks:
+      local: {}
+      preview:
+        args:
+          admin: ${account.preview-deployer}
