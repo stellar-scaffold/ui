@@ -46,14 +46,14 @@ cd my-project
 2. Set up your development environment:
 
 ```bash
-# Copy and configure environment variables like network and STELLAR_SCAFFOLD_ENV
+# Copy and configure environment variables like STELLAR_NETWORK
 cp .env.example .env
 
 # Install frontend dependencies
 npm install
 ```
 
-Have a look at `environments.toml` for more fined-grained control.
+Have a look at `scaffold.yml` to configure networks, accounts, and contracts.
 
 3. Start development environment:
 
@@ -110,7 +110,7 @@ my-project/                      # Your initialized project
 │   ├── App.tsx                  # Main application component
 │   └── main.tsx                 # Application entry point
 ├── target/                      # Build artifacts and WASM files
-├── environments.toml            # Environment configurations
+├── scaffold.yml                 # Networks, accounts, and contracts
 ├── package.json                 # Frontend dependencies
 └── .env                         # Local environment variables
 ```

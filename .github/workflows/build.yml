@@ -129,8 +129,8 @@ jobs:
           # Setting pipefail so a failed build's exit status isn't overwritten
           # by a successful call of `tee`
           set -o pipefail
-          STELLAR_SCAFFOLD_ENV=development stellar-scaffold build \
-            --build-clients 2>&1 | tee build_clients.log
+          stellar-scaffold build --build-clients --network local 2>&1 \
+            | tee build_clients.log
       - name: Check client generation summary
         run: |
           # Extract the number after "Failed: "
