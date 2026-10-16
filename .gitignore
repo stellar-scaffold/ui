@@ -2,7 +2,7 @@
 target
 .soroban
 
-# project identity and alias files will be in .config/stellar
+# stellar-cli keys and aliases, if XDG_CONFIG_HOME points at .config
 .config
 
 # test snapshot folders from sample contracts
