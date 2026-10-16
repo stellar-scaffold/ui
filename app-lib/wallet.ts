@@ -4,8 +4,8 @@ import {
 	StellarWalletsKit,
 } from "@creit.tech/stellar-wallets-kit"
 import { defaultModules } from "@creit.tech/stellar-wallets-kit/modules/utils"
-import { Horizon } from "@stellar/stellar-sdk"
-import { networkPassphrase, stellarNetwork } from "./env"
+import { Keypair, rpc, xdr } from "@stellar/stellar-sdk"
+import { allowHttp, networkPassphrase, rpcUrl, stellarNetwork } from "./env"
 
 // These wallets work on Local and Futurenet while the rest enforce or fail on
 // any networks beside Testnet and Mainnet. Filter below based on dApp config.
@@ -139,52 +139,52 @@ export const onWalletChange = (
 	}
 }
 
-function getHorizonHost(mode: string) {
-	switch (mode) {
-		case "LOCAL":
-			return "http://localhost:8000"
-		case "FUTURENET":
-			return "https://horizon-futurenet.stellar.org"
-		case "TESTNET":
-			return "https://horizon-testnet.stellar.org"
-		case "PUBLIC":
-			return "https://horizon.stellar.org"
-		default:
-			throw new Error(`Unknown Stellar network: ${mode}`)
-	}
-}
-
-const horizon = new Horizon.Server(getHorizonHost(stellarNetwork), {
-	allowHttp: stellarNetwork === "LOCAL",
-})
+// Server is configured from the generated clients' options, which don't change at runtime
+const server = new rpc.Server(rpcUrl, { allowHttp })
 
 const formatter = new Intl.NumberFormat()
 
-export type MappedBalances = Record<string, Horizon.HorizonApi.BalanceLine>
+/** One stroop is 10^-7 XLM. */
+const STROOPS_PER_XLM = 10_000_000n
 
-export const fetchBalances = async (address: string) => {
+/**
+ * Format a stroop amount as XLM. Splits the integer and fractional parts in
+ * bigint so large balances don't lose stroops before formatting.
+ */
+const formatStroops = (stroops: bigint): string => {
+	const whole = stroops / STROOPS_PER_XLM
+	const fraction = (stroops % STROOPS_PER_XLM).toString().padStart(7, "0")
+	return formatter.format(Number(`${whole}.${fraction}`))
+}
+
+/**
+ * Balances keyed by asset. Only native XLM (`xlm`) is fetched: RPC reads
+ * ledger entries by key and can't list an account's trustlines.
+ */
+export type MappedBalances = { xlm?: { balance: string } }
+
+/**
+ * Fetch the account's native XLM balance over RPC. An unfunded account has no
+ * ledger entry, so it resolves to `{}` and consumers see no `xlm` key. RPC
+ * failures are logged and also resolve to `{}`.
+ */
+export const fetchBalances = async (
+	address: string,
+): Promise<MappedBalances> => {
 	try {
-		const { balances } = await horizon.accounts().accountId(address).call()
-		const mapped = balances.reduce((acc, b) => {
-			b.balance = formatter.format(Number(b.balance))
-			const key =
-				b.asset_type === "native"
-					? "xlm"
-					: b.asset_type === "liquidity_pool_shares"
-						? b.liquidity_pool_id
-						: `${b.asset_code}:${b.asset_issuer}`
-			acc[key] = b
-			return acc
-		}, {} as MappedBalances)
-		return mapped
+		const key = xdr.LedgerKey.account(
+			new xdr.LedgerKeyAccount({
+				accountId: Keypair.fromPublicKey(address).xdrPublicKey(),
+			}),
+		)
+		// `getLedgerEntries` rather than `getAccountEntry`, which reports every
+		// failure (including RPC outages) as "Account not found"
+		const { entries } = await server.getLedgerEntries(key)
+		const account = entries[0]?.val.account()
+		if (!account) return {}
+		return { xlm: { balance: formatStroops(account.balance().toBigInt()) } }
 	} catch (err) {
-		// `not found` is sort of expected, indicating an unfunded wallet, which
-		// the consumer of `balances` can understand via the lack of `xlm` key.
-		// If the error does NOT match 'not found', log the error.
-		// We should also possibly not return `{}` in this case?
-		if (!(err instanceof Error && err.message.match(/not found/i))) {
-			console.error(err)
-		}
+		console.error(err)
 		return {}
 	}
 }
