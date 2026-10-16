@@ -157,13 +157,14 @@ jobs:
             echo "Expected $INDEX to exist and be non-empty after client generation."
             exit 1
           fi
-          # Count one exported const per contract
+          # Count one client constructor per contract; the shared `options`
+          # export is not a client
           EXPECTED=$(find contracts -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
-          ACTUAL=$(grep -c "^export const " "$INDEX" || true)
+          ACTUAL=$(grep -c "^export const .* = new " "$INDEX" || true)
           if [ "$ACTUAL" -ne "$EXPECTED" ]; then
             echo "Expected $EXPECTED client(s) in $INDEX, found $ACTUAL."
             echo "Partial client generation, check the \"Build with Scaffold\" step."
-            grep "^export const " "$INDEX" || echo "(no exports)"
+            grep "^export const .* = new " "$INDEX" || echo "(no clients)"
             exit 1
           fi
           echo "Generated $ACTUAL client(s)."
