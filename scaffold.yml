@@ -50,42 +50,46 @@ networks:
 # another network skips it and leaves it out of the generated clients.
 contracts:
   guess-the-number:
-    type: workspace
-    source: guess-the-number # the crate's package name
-    args:
-      admin: ${account.me}
-    # Contract methods called after deploy; they take no arguments.
-    after-deploy: [reset]
     networks:
       local:
+        type: workspace
+        source: guess-the-number # the crate's package name
+        args:
+          admin: ${account.me}
+        # Contract methods called after deploy; they take no arguments.
+        after-deploy: [reset]
+
       # Public networks point at a deployment you made and reviewed
       # separately, rather than deploying from the dev loop
-      # testnet:
-      #   type: contract
-      #   source: C...  # the deployed contract's ID
+      testnet:
+        type: contract
+        source: CAAXJETKPYAATU4HVVQUTE2FFBULNFGZNEOC3MS635U5K3GZLAY2HI4M # replace with your contract ID
       # mainnet:
       #   type: contract
       #   source: C...
 
   fungible-allowlist:
-    type: workspace
-    source: fungible-allowlist-example
-    args:
-      name: ExampleToken
-      symbol: EXT
-      admin: ${account.me}
-      manager: ${account.me}
-      initial_supply: 1000000000000000000000000
     networks:
       local:
+        type: workspace
+        source: fungible-allowlist-example
+        args:
+          name: ExampleToken
+          symbol: EXT
+          admin: ${account.me}
+          manager: ${account.me}
+          initial_supply: 1000000000000000000000000
+      testnet:
+        type: contract
+        source: CAAXJETKPYAATU4HVVQUTE2FFBULNFGZNEOC3MS635U5K3GZLAY2HI4M # replace with your contract ID
 
   nft-enumerable:
-    type: workspace
-    source: nft-enumerable-example
-    args:
-      uri: https://example.com/nft/
-      name: ExampleNFT
-      symbol: ENFT
-      owner: ${account.me}
     networks:
       local:
+        type: workspace
+        source: nft-enumerable-example
+        args:
+          uri: https://example.com/nft/
+          name: ExampleNFT
+          symbol: ENFT
+          owner: ${account.me}
