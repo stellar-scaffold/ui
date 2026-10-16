@@ -32,10 +32,10 @@ building Stellar/Soroban smart contract UIs.
 
 ### Key flows
 
-**Contract client generation**: `stellar scaffold watch --build-clients` (part
-of `npm run dev`) watches for contract changes, compiles Rust contracts to WASM,
-deploys them, and generates TypeScript clients into `packages/<contract-name>/`.
-These packages are npm workspace members and are re-imported as
+**Contract client generation**: `stellar scaffold watch` (part of `npm run dev`)
+watches for contract changes, compiles Rust contracts to WASM, deploys them, and
+generates TypeScript clients into `packages/<contract-name>/`. These packages
+are npm workspace members and are re-imported as
 `src/contracts/<contract_name>.ts`.
 
 **Stub files**: `src/contracts/*.ts` (except `util.ts`) are stub files that
@@ -46,10 +46,13 @@ instance of the contract client and import `rpcUrl`/`networkPassphrase` from
 
 **Environment config**: Two separate config systems:
 
-- `.env` (copy from `.env.example`): Runtime env vars for the frontend, prefixed
-  with `PUBLIC_` to be exposed by Vite
 - `scaffold.yml`: Stellar Scaffold CLI config defining networks, accounts, and
-  the contracts deployed to each network
+  the contracts deployed to each network. The selected network
+  (`STELLAR_NETWORK`, else `stellar network use`, else `local`) is written into
+  the generated clients, and `@stellar-scaffold/app-lib` reads the frontend's
+  network from there
+- `.env` (copy from `.env.example`): optional `STELLAR_NETWORK`, secrets
+  `scaffold.yml` references as `${env.NAME}`, and your own `PUBLIC_` values
 
 ### Provider tree (`src/main.tsx`)
 

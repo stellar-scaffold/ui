@@ -9,7 +9,6 @@ on:
 env:
   CARGO_TERM_COLOR: always
   PKG_CONFIG_PATH: /usr/lib/pkgconfig
-  PUBLIC_STELLAR_NETWORK: local
 
 jobs:
   build:
@@ -129,6 +128,8 @@ jobs:
           # Setting pipefail so a failed build's exit status isn't overwritten
           # by a successful call of `tee`
           set -o pipefail
+          # Released CLIs still need --build-clients; newer ones only note
+          # that it's redundant for a version 2 scaffold.yml
           stellar-scaffold build --build-clients --network local 2>&1 \
             | tee build_clients.log
       - name: Check client generation summary
