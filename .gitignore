@@ -2,9 +2,6 @@
 target
 .soroban
 
-# stellar-cli keys and aliases, if XDG_CONFIG_HOME points at .config
-.config
-
 # what `stellar scaffold build` deployed from this checkout. The directory
 # ignores itself for git; listing it here keeps Prettier out of it too
 .scaffold
