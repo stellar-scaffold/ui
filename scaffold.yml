@@ -23,12 +23,19 @@ networks:
     # Created and funded on first build, the first account will sign deploys
     accounts: [me]
 
+  # Testnet is staging: a dry run for mainnet. Deploy there deliberately, then
+  # point contracts at those deployments below. Public networks never deploy
+  # from `build` or `watch` unless you opt in with `allow-deploy: true`.
   testnet:
     # Funded with Friendbot on first build. Keep testnet keys separate from
     # local ones, as you would for mainnet.
     accounts: [testnet-user]
-    # Public networks don't deploy unless you opt in
-    allow-deploy: true
+
+  # To redeploy freely on testnet while developing, add a separate network
+  # that opts in, and build for it with STELLAR_NETWORK=testnet-dev:
+  # testnet-dev:
+  #   extends: testnet
+  #   allow-deploy: true
 
   # mainnet:
   #   # stellar-cli has no default mainnet RPC; bring your own
@@ -43,43 +50,46 @@ networks:
 # another network skips it and leaves it out of the generated clients.
 contracts:
   guess-the-number:
-    type: workspace
-    source: guess-the-number # the crate's package name
-    args:
-      admin: ${account.me}
-    # Contract methods called after deploy; they take no arguments.
-    after-deploy: [reset]
     networks:
       local:
-      testnet:
-        # Accounts belong to a network, so testnet signs with its own
+        type: workspace
+        source: guess-the-number # the crate's package name
         args:
-          admin: ${account.testnet-user}
-      # Don't deploy to mainnet from a dev loop; point at a deployment you
-      # made and reviewed separately
+          admin: ${account.me}
+        # Contract methods called after deploy; they take no arguments.
+        after-deploy: [reset]
+
+      # Public networks point at a deployment you made and reviewed
+      # separately, rather than deploying from the dev loop
+      testnet:
+        type: contract
+        source: CAAXJETKPYAATU4HVVQUTE2FFBULNFGZNEOC3MS635U5K3GZLAY2HI4M # replace with your contract ID
       # mainnet:
       #   type: contract
-      #   source: C...  # the deployed contract's ID
+      #   source: C...
 
   fungible-allowlist:
-    type: workspace
-    source: fungible-allowlist-example
-    args:
-      name: ExampleToken
-      symbol: EXT
-      admin: ${account.me}
-      manager: ${account.me}
-      initial_supply: 1000000000000000000000000
     networks:
       local:
+        type: workspace
+        source: fungible-allowlist-example
+        args:
+          name: ExampleToken
+          symbol: EXT
+          admin: ${account.me}
+          manager: ${account.me}
+          initial_supply: 1000000000000000000000000
+      testnet:
+        type: contract
+        source: CAAXJETKPYAATU4HVVQUTE2FFBULNFGZNEOC3MS635U5K3GZLAY2HI4M # replace with your contract ID
 
   nft-enumerable:
-    type: workspace
-    source: nft-enumerable-example
-    args:
-      uri: https://example.com/nft/
-      name: ExampleNFT
-      symbol: ENFT
-      owner: ${account.me}
     networks:
       local:
+        type: workspace
+        source: nft-enumerable-example
+        args:
+          uri: https://example.com/nft/
+          name: ExampleNFT
+          symbol: ENFT
+          owner: ${account.me}

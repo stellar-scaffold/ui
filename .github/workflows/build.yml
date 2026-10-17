@@ -9,7 +9,6 @@ on:
 env:
   CARGO_TERM_COLOR: always
   PKG_CONFIG_PATH: /usr/lib/pkgconfig
-  PUBLIC_STELLAR_NETWORK: local
 
 jobs:
   build:
@@ -129,6 +128,8 @@ jobs:
           # Setting pipefail so a failed build's exit status isn't overwritten
           # by a successful call of `tee`
           set -o pipefail
+          # Released CLIs still need --build-clients; newer ones only note
+          # that it's redundant for a version 2 scaffold.yml
           stellar-scaffold build --build-clients --network local 2>&1 \
             | tee build_clients.log
       - name: Check client generation summary
@@ -156,13 +157,14 @@ jobs:
             echo "Expected $INDEX to exist and be non-empty after client generation."
             exit 1
           fi
-          # Count one exported const per contract
+          # Count one client constructor per contract; the shared `options`
+          # export is not a client
           EXPECTED=$(find contracts -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
-          ACTUAL=$(grep -c "^export const " "$INDEX" || true)
+          ACTUAL=$(grep -c "^export const .* = new " "$INDEX" || true)
           if [ "$ACTUAL" -ne "$EXPECTED" ]; then
             echo "Expected $EXPECTED client(s) in $INDEX, found $ACTUAL."
             echo "Partial client generation, check the \"Build with Scaffold\" step."
-            grep "^export const " "$INDEX" || echo "(no exports)"
+            grep "^export const .* = new " "$INDEX" || echo "(no clients)"
             exit 1
           fi
           echo "Generated $ACTUAL client(s)."

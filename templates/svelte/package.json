@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "npm start",
-    "start": "concurrently --kill-others-on-fail --names stellar,vite -c gray,green --pad-prefix \"stellar scaffold watch --build-clients\" \"vite dev\"",
+    "start": "concurrently --kill-others-on-fail --names stellar,vite -c gray,green --pad-prefix \"stellar scaffold watch\" \"vite dev\"",
     "build": "svelte-kit sync && vite build",
     "preview": "vite preview",
     "lint": "eslint .",

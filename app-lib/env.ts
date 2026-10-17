@@ -1,5 +1,5 @@
 import { Networks } from "@creit.tech/stellar-wallets-kit"
-import { z } from "zod"
+import { options } from "./clients"
 
 type NetworkType = "mainnet" | "testnet" | "futurenet" | "local"
 
@@ -8,63 +8,97 @@ interface Network {
 	label: string
 	passphrase: string
 	rpcUrl: string
-	horizonUrl: string
 }
 
-const envSchema = z.object({
-	PUBLIC_STELLAR_NETWORK: z.enum([
-		"PUBLIC",
-		"FUTURENET",
-		"TESTNET",
-		"LOCAL",
-		"STANDALONE", // deprecated in favor of LOCAL
-	] as const),
-	PUBLIC_STELLAR_NETWORK_PASSPHRASE: z.enum(Networks),
-	PUBLIC_STELLAR_RPC_URL: z.string(),
-	PUBLIC_STELLAR_HORIZON_URL: z.string(),
-})
+/**
+ * The Stellar networks app-lib knows how to link to and fund on, keyed by
+ * passphrase. Custom networks that `extends` one of these share its
+ * passphrase, so they resolve to it too.
+ */
+const KNOWN_NETWORKS = {
+	[Networks.PUBLIC]: "PUBLIC",
+	[Networks.TESTNET]: "TESTNET",
+	[Networks.FUTURENET]: "FUTURENET",
+	[Networks.STANDALONE]: "LOCAL",
+} as const
 
-const parsed = envSchema.safeParse(import.meta.env)
+type StellarNetwork = (typeof KNOWN_NETWORKS)[keyof typeof KNOWN_NETWORKS]
 
-const env: z.infer<typeof envSchema> = parsed.success
-	? parsed.data
-	: {
-			PUBLIC_STELLAR_NETWORK: "LOCAL",
-			PUBLIC_STELLAR_NETWORK_PASSPHRASE: Networks.STANDALONE,
-			PUBLIC_STELLAR_RPC_URL: "http://localhost:8000/rpc",
-			PUBLIC_STELLAR_HORIZON_URL: "http://localhost:8000",
-		}
+/**
+ * The network the generated clients were built for. `stellar scaffold` writes
+ * `options` into `clients/index.ts` from the network selected in
+ * `scaffold.yml`, so the frontend can never disagree with the contracts it
+ * calls. An unrecognized passphrase is an error rather than a silent fallback
+ * to the local network.
+ */
+const stellarNetworkFor = (passphrase: string): StellarNetwork => {
+	if (passphrase in KNOWN_NETWORKS) {
+		return KNOWN_NETWORKS[passphrase as keyof typeof KNOWN_NETWORKS]
+	}
+	throw new Error(
+		`Unsupported network passphrase in generated clients: "${passphrase}". app-lib supports the local, testnet, futurenet, and mainnet passphrases.`,
+	)
+}
 
-export const stellarNetwork =
-	env.PUBLIC_STELLAR_NETWORK === "STANDALONE"
-		? "LOCAL"
-		: env.PUBLIC_STELLAR_NETWORK
-export const networkPassphrase = env.PUBLIC_STELLAR_NETWORK_PASSPHRASE
+export const networkPassphrase = options.networkPassphrase
+export const rpcUrl = options.rpcUrl
+// Plain HTTP is only allowed where `scaffold.yml` allows it (local by default)
+export const allowHttp = options.allowHttp
+export const stellarNetwork = stellarNetworkFor(networkPassphrase)
 
 const stellarEncode = (str: string) => {
 	return str.replace(/\//g, "//").replace(/;/g, "/;")
 }
 
-export const labPrefix = () => {
+/**
+ * Stellar Lab's network state for a transaction-dashboard link. Lab also wants
+ * a Horizon URL: SDF's public instance for the public networks, and the
+ * quickstart container's root (where its Horizon is served) for local.
+ */
+const labNetwork = (): {
+	host: string
+	id: string
+	label: string
+	horizonUrl: string
+} => {
 	switch (stellarNetwork) {
 		case "LOCAL":
-			return `http://localhost:8000/lab/transaction-dashboard?$=network$id=custom&label=Custom&horizonUrl=${stellarEncode(horizonUrl)}&rpcUrl=${stellarEncode(rpcUrl)}&passphrase=${stellarEncode(networkPassphrase)};`
+			return {
+				host: "http://localhost:8000/lab",
+				id: "custom",
+				label: "Custom",
+				horizonUrl: new URL(rpcUrl).origin,
+			}
 		case "PUBLIC":
-			return `https://lab.stellar.org/transaction-dashboard?$=network$id=mainnet&label=Mainnet&horizonUrl=${stellarEncode(horizonUrl)}&rpcUrl=${stellarEncode(rpcUrl)}&passphrase=${stellarEncode(networkPassphrase)};`
-		case "TESTNET":
-			return `https://lab.stellar.org/transaction-dashboard?$=network$id=testnet&label=Testnet&horizonUrl=${stellarEncode(horizonUrl)}&rpcUrl=${stellarEncode(rpcUrl)}&passphrase=${stellarEncode(networkPassphrase)};`
+			return {
+				host: "https://lab.stellar.org",
+				id: "mainnet",
+				label: "Mainnet",
+				horizonUrl: "https://horizon.stellar.org",
+			}
 		case "FUTURENET":
-			return `https://lab.stellar.org/transaction-dashboard?$=network$id=futurenet&label=Futurenet&horizonUrl=${stellarEncode(horizonUrl)}&rpcUrl=${stellarEncode(rpcUrl)}&passphrase=${stellarEncode(networkPassphrase)};`
-		default:
-			return `https://lab.stellar.org/transaction-dashboard?$=network$id=testnet&label=Testnet&horizonUrl=${stellarEncode(horizonUrl)}&rpcUrl=${stellarEncode(rpcUrl)}&passphrase=${stellarEncode(networkPassphrase)};`
+			return {
+				host: "https://lab.stellar.org",
+				id: "futurenet",
+				label: "Futurenet",
+				horizonUrl: "https://horizon-futurenet.stellar.org",
+			}
+		case "TESTNET":
+			return {
+				host: "https://lab.stellar.org",
+				id: "testnet",
+				label: "Testnet",
+				horizonUrl: "https://horizon-testnet.stellar.org",
+			}
 	}
 }
 
-// NOTE: needs to be exported for contract files in this directory
-export const rpcUrl = env.PUBLIC_STELLAR_RPC_URL
-export const horizonUrl = env.PUBLIC_STELLAR_HORIZON_URL
+export const labPrefix = () => {
+	const lab = labNetwork()
+	return `${lab.host}/transaction-dashboard?$=network$id=${lab.id}&label=${lab.label}&horizonUrl=${stellarEncode(lab.horizonUrl)}&rpcUrl=${stellarEncode(rpcUrl)}&passphrase=${stellarEncode(networkPassphrase)};`
+}
 
-const networkToId = (network: string): NetworkType => {
+const networkToId = (network: StellarNetwork): NetworkType => {
 	switch (network) {
 		case "PUBLIC":
 			return "mainnet"
@@ -72,7 +106,7 @@ const networkToId = (network: string): NetworkType => {
 			return "testnet"
 		case "FUTURENET":
 			return "futurenet"
-		default:
+		case "LOCAL":
 			return "local"
 	}
 }
@@ -82,5 +116,4 @@ export const network: Network = {
 	label: stellarNetwork.toLowerCase(),
 	passphrase: networkPassphrase,
 	rpcUrl: rpcUrl,
-	horizonUrl: horizonUrl,
 }

@@ -11,9 +11,7 @@ export function getFriendbotUrl(address: string) {
 		case "TESTNET":
 			return `https://friendbot.stellar.org/?addr=${address}`
 		default:
-			throw new Error(
-				`Unknown or unsupported PUBLIC_STELLAR_NETWORK for friendbot: ${stellarNetwork}`,
-			)
+			throw new Error(`Friendbot is not available on ${stellarNetwork}`)
 	}
 }
 

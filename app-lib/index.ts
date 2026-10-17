@@ -3,7 +3,7 @@
 // Clients in app-lib/clients/index.ts). Framework-specific code (providers,
 // stores, UI components) stays in each template.
 
-export * from "./env" // rpcUrl, networkPassphrase, stellarNetwork, horizonUrl, network, labPrefix
+export * from "./env" // rpcUrl, networkPassphrase, allowHttp, stellarNetwork, network, labPrefix
 export * from "./format" // shortAddress, formatNetworkName, networkStatus, NetworkState
 export * from "./friendbot" // getFriendbotUrl
 export * from "./subscription" // subscribeToEvents

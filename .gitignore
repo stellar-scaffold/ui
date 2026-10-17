@@ -2,8 +2,9 @@
 target
 .soroban
 
-# project identity and alias files will be in .config/stellar
-.config
+# what `stellar scaffold build` deployed from this checkout. The directory
+# ignores itself for git; listing it here keeps Prettier out of it too
+.scaffold
 
 # test snapshot folders from sample contracts
 test_snapshots

@@ -46,7 +46,7 @@ cd my-project
 2. Set up your development environment:
 
 ```bash
-# Copy and configure environment variables like STELLAR_NETWORK
+# Copy environment variables (optional STELLAR_NETWORK, secrets)
 cp .env.example .env
 
 # Install frontend dependencies

@@ -1,6 +1,6 @@
 import { xdr } from "@stellar/stellar-sdk"
 import { Server, type Api } from "@stellar/stellar-sdk/rpc"
-import { rpcUrl, stellarNetwork } from "./env"
+import { allowHttp, rpcUrl } from "./env"
 
 /** A Soroban contract event delivered to a subscription callback. Re-exported so
  * templates depend only on @stellar-scaffold/app-lib, not @stellar/stellar-sdk. */
@@ -13,8 +13,8 @@ const paging: Record<
 	{ lastLedgerStart?: number; pagingToken?: string }
 > = {}
 
-// NOTE: Server is configured using envvars which shouldn't change during runtime
-const server = new Server(rpcUrl, { allowHttp: stellarNetwork === "LOCAL" })
+// Server is configured from the generated clients' options, which don't change at runtime
+const server = new Server(rpcUrl, { allowHttp })
 
 /**
  * Subscribe to events for a given topic from a given contract. Returns a

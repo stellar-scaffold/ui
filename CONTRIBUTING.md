@@ -29,9 +29,9 @@ npm start --workspace templates/react
 npm start --workspace templates/svelte
 ```
 
-Each runs `stellar scaffold watch --build-clients` alongside the dev server, so
-you need the **Stellar CLI** and **Stellar Scaffold CLI** installed (the root
-`npm start` prints install instructions if either is missing).
+Each runs `stellar scaffold watch` alongside the dev server, so you need the
+**Stellar CLI** and **Stellar Scaffold CLI** installed (the root `npm start`
+prints install instructions if either is missing).
 
 Shared code lives in `app-lib/`; changes there are picked up by every template
 via the `@stellar-scaffold/app-lib` workspace package. Keep framework-specific
