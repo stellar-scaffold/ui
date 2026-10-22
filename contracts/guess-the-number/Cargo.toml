@@ -3,9 +3,11 @@ name = "guess-the-number"
 description = "Admin sets up the pot, anyone can guess to win it"
 edition.workspace = true
 license.workspace = true
-repository.workspace = true
 publish = false
 version.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
 
 [package.metadata.stellar]
 # Set contract metadata for authors, homepage, and version based on the Cargo.toml package values
