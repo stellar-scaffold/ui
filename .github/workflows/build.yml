@@ -119,6 +119,22 @@ jobs:
         uses: stellar/quickstart@main
         with:
           enable: "core,rpc"
+          # Match Scaffold CLI's local-network image and protocol. The floating
+          # latest image moved to RPC 30 but still defaults to ledger protocol
+          # 28, which its protocol-29/30 simulation hosts cannot simulate.
+          tag: v678-b1525.1-testing
+          protocol_version: "29"
+      - name: Check local network protocol
+        run: |
+          # A healthy RPC alone does not guarantee protocol compatibility.
+          curl --fail --silent --show-error \
+            -H 'Content-Type: application/json' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"getVersionInfo"}' \
+            http://localhost:8000/rpc | jq .
+          curl --fail --silent --show-error \
+            -H 'Content-Type: application/json' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"getLatestLedger"}' \
+            http://localhost:8000/rpc | jq -e '.result.protocolVersion == 29'
       - name: Add master account as default identity
         run: |
           mkdir -p .config/stellar/identity

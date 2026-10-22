@@ -30,7 +30,7 @@ impl ExampleContract {
         let owner: Address =
             e.storage().instance().get(&DataKey::Owner).expect("owner should be set");
         owner.require_auth();
-        Enumerable::sequential_mint(e, &to)
+        Enumerable::mint(e, &to)
     }
 }
 
