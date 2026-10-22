@@ -1,82 +1,135 @@
 #![cfg(test)]
-// This lets use reference types in the std library for testing
+// Tests can use Rust's standard library even though the contract is no_std.
 extern crate std;
 
 use super::*;
 use soroban_sdk::{
+    Address, Env, IntoVal,
     testutils::{Address as _, MockAuth, MockAuthInvoke},
-    token::StellarAssetClient,
-    Address, Env, IntoVal, Val, Vec,
+    token::{StellarAssetClient, TokenClient},
 };
 
 fn init_test<'a>(env: &'a Env) -> (Address, StellarAssetClient<'a>, GuessTheNumberClient<'a>) {
     let admin = Address::generate(env);
-    let client = generate_client(env, &admin);
-    // This is needed because we want to call a function from within the context of the contract
-    // In this case we want to get the address of the XLM contract registered by the constructor
-    let sac_address = env.as_contract(&client.address, || xlm::contract_id(env));
-    (admin, StellarAssetClient::new(env, &sac_address), client)
+    // Skip signature checks while preparing the test's accounts and balances.
+    // Tests that check authorization supply their own mocks afterward.
+    env.mock_all_auths();
+    let contract_id = env.register(GuessTheNumber, (&admin,));
+    let client = GuessTheNumberClient::new(env, &contract_id);
+    // Create the asset outside contract invocations, after the game exists.
+    let asset = xlm::register(env, &admin, &contract_id);
+    let sac = StellarAssetClient::new(env, &asset.address());
+    // Mint a starting balance for the admin. On testnet, use Friendbot instead.
+    sac.mint(&admin, &xlm::to_stroops(10_000));
+    // Clear setup's auth mocks so each test chooses what to authorize.
+    env.set_auths(&[]);
+    (admin, sac, client)
 }
 
 #[test]
 fn constructed_correctly() {
     let env = &Env::default();
     let (admin, sac, client) = init_test(env);
-    // Check that the admin is set correctly
     assert_eq!(client.admin(), Some(admin.clone()));
-    // Check that the contract has a balance of 1 XLM
-    assert_eq!(sac.balance(&client.address), xlm::to_stroops(1));
-    // Need to use `as_contract` to call a function in the context of the contract
-    // Since the method `number` is not in the client, but is visibile in the crate
-    let number = env.as_contract(&client.address, || GuessTheNumber::number(env));
-    assert_eq!(number, 4);
+    // Deployment doesn't take funds or start a round; after-deploy calls reset.
+    assert_eq!(sac.balance(&admin), xlm::to_stroops(10_000));
+    assert_eq!(sac.balance(&client.address), 0);
+    let alice = Address::generate(env);
+    assert!(client.try_guess(&4, &alice).is_err());
 }
 
 #[test]
 fn only_admin_can_reset() {
     let env = &Env::default();
-    let (admin, _, client) = init_test(env);
+    let (admin, sac, client) = init_test(env);
     let user = Address::generate(env);
 
-    set_caller(&client, "reset", &user, ());
+    set_caller(&client, &user);
     assert!(client.try_reset().is_err());
+    assert_eq!(sac.balance(&client.address), 0);
+    assert_eq!(sac.balance(&admin), xlm::to_stroops(10_000));
 
-    set_caller(&client, "reset", &admin, ());
+    set_caller(&client, &admin);
     assert!(client.try_reset().is_ok());
+    assert_eq!(sac.balance(&client.address), xlm::to_stroops(1));
+    assert_eq!(sac.balance(&admin), xlm::to_stroops(9_999));
+}
+
+#[test]
+fn only_current_admin_can_transfer_administration() {
+    let env = &Env::default();
+    let (admin, sac, client) = init_test(env);
+    let new_admin = Address::generate(env);
+    // Give the new admin enough XLM to fund a round after taking over.
+    env.mock_all_auths();
+    sac.mint(&new_admin, &xlm::to_stroops(1));
+    env.set_auths(&[]);
+
+    // No authorization means no change to the stored admin.
+    assert!(client.try_set_admin(&new_admin).is_err());
+    assert_eq!(client.admin(), Some(admin.clone()));
+
+    let transfer = MockAuthInvoke {
+        contract: &client.address,
+        fn_name: "set_admin",
+        args: (&new_admin,).into_val(env),
+        sub_invokes: &[],
+    };
+    // The proposed new admin cannot authorize their own appointment.
+    env.mock_auths(&[MockAuth {
+        address: &new_admin,
+        invoke: &transfer,
+    }]);
+    assert!(client.try_set_admin(&new_admin).is_err());
+    assert_eq!(client.admin(), Some(admin.clone()));
+
+    // Only the currently stored admin can authorize the transfer.
+    env.mock_auths(&[MockAuth {
+        address: &admin,
+        invoke: &transfer,
+    }]);
+    client.set_admin(&new_admin);
+    assert_eq!(client.admin(), Some(new_admin.clone()));
+    assert!(client.try_set_admin(&new_admin).is_err());
+    assert_eq!(client.admin(), Some(new_admin.clone()));
+
+    // Reset permissions move to the new admin, who now funds the pot.
+    set_caller(&client, &admin);
+    assert!(client.try_reset().is_err());
+    set_caller(&client, &new_admin);
+    client.reset();
+    assert_eq!(sac.balance(&client.address), xlm::to_stroops(1));
+    assert_eq!(sac.balance(&new_admin), 0);
+    assert_eq!(sac.balance(&admin), xlm::to_stroops(10_000));
 }
 
 #[test]
 fn guess() {
     let env = &Env::default();
     let (_, sac, client) = init_test(env);
-    // This lets you mock all auth when they become complicated when making cross contract calls.
+    // Focus this test on gameplay, without specifying every nested token auth.
     env.mock_all_auths();
+    client.reset();
 
-    // Create a user to guess
     let alice = Address::generate(env);
-    // Mint tokens to the user. On testnet you use friendbot to fund the account.
+    // Give Alice enough to make a paid guess; Bob starts with no funds.
     sac.mint(&alice, &xlm::to_stroops(2));
-    // Check that alice has the tokens
-    assert_eq!(sac.balance(&alice), xlm::to_stroops(2));
-
-    // Create another user with no funds
     let bob = Address::generate(env);
 
-    // In the testing enviroment the random seed is always the same initially.
-    // This tests a wrong guess so the balance should go down one XLM
+    // The first round's deterministic test number is 4.
+    // A wrong guess costs Alice 1 XLM, which is added to the prize pot.
     assert!(!client.guess(&3, &alice));
     assert_eq!(sac.balance(&alice), xlm::to_stroops(1));
-
-    // Now we test a wrong guess but the user has no funds so  we get an error
+    // Bob can't pay the fee, so the contract returns its custom transfer error.
     assert_eq!(
         client.try_guess(&3, &bob).unwrap_err(),
         Ok(Error::FailedToTransferFromGuesser)
     );
 
-    // Now we test a correct guess, the balance should go up by the initial 1 XLM + the 1 XLM from the contract
+    // The winner receives the initial pot plus the previous wrong guess's fee.
     assert!(client.guess(&4, &alice));
     assert_eq!(sac.balance(&alice), xlm::to_stroops(3));
-
+    // A second winning guess can't claim the same pot again.
     assert_eq!(
         client.try_guess(&4, &alice).unwrap_err(),
         Ok(Error::NoBalanceToTransfer)
@@ -84,77 +137,71 @@ fn guess() {
 }
 
 #[test]
-fn add_funds() {
+fn reset_and_guess() {
     let env = &Env::default();
-    let (_, sac, client) = init_test(env);
-    // This lets you mock all auth when they become complicated when making cross contract calls.
+    let (admin, sac, client) = init_test(env);
     env.mock_all_auths();
 
-    // Create a user to guess
+    // Start the first round, just as scaffold.yml's after-deploy hook does.
+    client.reset();
     let alice = Address::generate(env);
-    // Mint tokens to the user. On testnet you use friendbot to fund the account.
-    sac.mint(&alice, &xlm::to_stroops(2));
-    // Now we test a correct guess, the balance should go up by the initial 1 XLM + the 1 XLM from the contract
     assert!(client.guess(&4, &alice));
-    assert_eq!(sac.balance(&alice), xlm::to_stroops(3));
     assert_eq!(sac.balance(&client.address), 0);
 
-    client.add_funds(&xlm::to_stroops(5));
-    assert_eq!(sac.balance(&client.address), xlm::to_stroops(5));
-
-    // Since we didn't reset the number, the guess should still be correct
-    assert!(client.guess(&4, &alice));
-    assert_eq!(sac.balance(&alice), xlm::to_stroops(8));
+    // Reset replenishes the pot after a win and chooses a new number.
+    client.reset();
+    assert_eq!(sac.balance(&client.address), xlm::to_stroops(1));
+    assert_eq!(sac.balance(&admin), xlm::to_stroops(9_998));
+    assert!(client.guess(&10, &alice));
+    assert_eq!(sac.balance(&alice), xlm::to_stroops(2));
     assert_eq!(sac.balance(&client.address), 0);
+
+    // Resetting an unclaimed round adds to the pot instead of replacing it.
+    client.reset();
+    client.reset();
+    assert_eq!(sac.balance(&client.address), xlm::to_stroops(2));
+    assert_eq!(sac.balance(&admin), xlm::to_stroops(9_996));
 }
 
 #[test]
-fn reset_and_guess() {
+fn reset_without_funds_does_not_change_round() {
     let env = &Env::default();
-    let (_, sac, client) = init_test(env);
-    // This lets you mock all auth when they become complicated when making cross contract calls.
+    let (admin, sac, client) = init_test(env);
     env.mock_all_auths();
-
-    // Create a user to guess
-    let alice = Address::generate(env);
-    // Mint tokens to the user. On testnet you use friendbot to fund the account.
-    sac.mint(&alice, &xlm::to_stroops(2));
-
-    // Reset the number
     client.reset();
+    // as_contract lets test code read storage in the game's contract context.
+    let number = env.as_contract(&client.address, || GuessTheNumber::number(env));
+    let recipient = Address::generate(env);
+    let token = TokenClient::new(env, &sac.address);
+    // Empty the admin's wallet so funding the next round will fail.
+    token.transfer(&admin, &recipient, &token.balance(&admin));
+    // A failed transfer rolls back reset: the existing pot and number survive.
 
-    // Guess again, this should be correct now
-    assert!(client.guess(&10, &alice));
+    assert!(client.try_reset().is_err());
+    assert_eq!(sac.balance(&client.address), xlm::to_stroops(1));
+    assert_eq!(
+        env.as_contract(&client.address, || GuessTheNumber::number(env)),
+        number
+    );
 }
 
-fn generate_client<'a>(env: &Env, admin: &Address) -> GuessTheNumberClient<'a> {
-    let contract_id = Address::generate(env);
-    env.mock_all_auths();
-    let sac = env.register_stellar_asset_contract_v2(admin.clone());
-    StellarAssetClient::new(env, &sac.address()).mint(admin, &xlm::to_stroops(10_000));
-    let contract_id = env.register_at(&contract_id, GuessTheNumber, (admin, sac.address()));
-    env.set_auths(&[]); // clear auths
-    GuessTheNumberClient::new(env, &contract_id)
-}
-
-// This lets you mock the auth context for a function call
-fn set_caller<T>(client: &GuessTheNumberClient, fn_name: &str, caller: &Address, args: T)
-where
-    T: IntoVal<Env, Vec<Val>>,
-{
-    // clear previous auth mocks
-    client.env.set_auths(&[]);
-
-    let invoke = &MockAuthInvoke {
-        contract: &client.address,
-        fn_name,
-        args: args.into_val(&client.env),
-        sub_invokes: &[],
-    };
-
-    // mock auth as passed-in address
-    client.env.mock_auths(&[MockAuth {
-        address: &caller,
-        invoke,
+// Authorize reset and its nested transfer, rather than mocking every caller.
+fn set_caller(client: &GuessTheNumberClient, caller: &Address) {
+    let env = &client.env;
+    let asset = env.as_contract(&client.address, || xlm::contract_id(env));
+    env.mock_auths(&[MockAuth {
+        address: caller,
+        invoke: &MockAuthInvoke {
+            contract: &client.address,
+            fn_name: "reset",
+            args: ().into_val(env),
+            // The admin authorizes both reset and the token transfer it calls.
+            sub_invokes: &[MockAuthInvoke {
+                contract: &asset,
+                fn_name: "transfer",
+                args: (caller, &client.address, xlm::to_stroops(1)).into_val(env),
+                sub_invokes: &[],
+            }],
+        },
     }]);
 }

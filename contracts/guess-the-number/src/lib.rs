@@ -1,6 +1,6 @@
 #![no_std]
 use soroban_sdk::{
-    contract, contractimpl, symbol_short, Address, BytesN, ContractExecutable, Env, Symbol,
+    Address, BytesN, ContractExecutable, Env, Symbol, contract, contractimpl, symbol_short,
 };
 
 mod error;
@@ -16,44 +16,30 @@ pub const ADMIN_KEY: &Symbol = &symbol_short!("ADMIN");
 
 #[contractimpl]
 impl GuessTheNumber {
-    /// Constructor to initialize the contract with an admin and a random number
-    #[cfg(not(test))]
+    /// Set the admin. Call reset after deployment to fund and start the game.
     pub fn __constructor(env: &Env, admin: Address) {
+        // Require the chosen admin to authorize setting up the game.
         admin.require_auth();
-        xlm::register(env, &admin);
-        Self::initialize(env, admin);
+        // Remember the admin so later calls can check who is allowed to reset.
+        env.storage().instance().set(ADMIN_KEY, &admin);
     }
 
-    // SDK test generators must run outside contract invocations.
-    #[cfg(test)]
-    pub fn __constructor(env: &Env, admin: Address, asset: Address) {
+    /// Add 1 XLM to the pot and choose a new number. Only callable by admin.
+    pub fn reset(env: &Env) {
+        let admin = Self::admin(env).expect("admin not set");
+        // Only the admin can reset the game and authorize spending their XLM.
         admin.require_auth();
-        xlm::set_contract_id(env, &asset);
-        Self::initialize(env, admin);
-    }
-
-    fn initialize(env: &Env, admin: Address) {
-        // Send the contract an amount of XLM to play with
+        // Ensure the XLM contract exists on the network. Unit tests create
+        // their own asset in test setup, outside contract invocations.
+        #[cfg(not(test))]
+        xlm::register(env);
+        // Seed the pot with 1 XLM from the admin for players to win.
         xlm::token_client(env).transfer(
             &admin,
             env.current_contract_address(),
             &xlm::to_stroops(1),
         );
-        // Set the admin in storage
-        Self::set_admin(env, admin);
-        // Set a random number between 1 and 10
-        Self::reset_number(env);
-    }
-
-    /// Update the number. Only callable by admin.
-    pub fn reset(env: &Env) {
-        Self::require_admin(env);
-        Self::reset_number(env);
-    }
-
-    // Private function to reset the number to a new random value
-    // which doesn't require auth from the admin
-    fn reset_number(env: &Env) {
+        // Store a new number between 1 and 10 for this round.
         let new_number: u64 = env.prng().gen_range(1..=10);
         env.storage().instance().set(THE_NUMBER, &new_number);
     }
@@ -82,41 +68,31 @@ impl GuessTheNumber {
         Ok(guessed_it)
     }
 
-    /// Admin can add more funds to the contract
-    pub fn add_funds(env: &Env, amount: i128) {
-        Self::require_admin(env);
-        let contract_address = env.current_contract_address();
-        // unwrap here is safe because the admin was set in the constructor
-        let admin = Self::admin(env).unwrap();
-        xlm::token_client(env).transfer(&admin, &contract_address, &amount);
-    }
-
     /// Upgrade the contract to new wasm. Only callable by admin.
     pub fn upgrade(env: &Env, new_wasm_hash: BytesN<32>) {
         Self::require_admin(env);
-        env.deployer().update_current_contract(ContractExecutable::Wasm(new_wasm_hash));
+        env.deployer()
+            .update_current_contract(ContractExecutable::Wasm(new_wasm_hash));
     }
 
     /// readonly function to get the current number
     /// `pub(crate)` makes it accessible in the same crate, but not outside of it
     pub(crate) fn number(env: &Env) -> u64 {
-        // We can unwrap because the number is set in the constructor
-        // and then only reset by the admin
-        unsafe { env.storage().instance().get(THE_NUMBER).unwrap_unchecked() }
+        env.storage()
+            .instance()
+            .get(THE_NUMBER)
+            .expect("game not started; call reset first")
     }
 
     /// Get current admin
     pub fn admin(env: &Env) -> Option<Address> {
         env.storage().instance().get(ADMIN_KEY)
     }
-
-    /// Set a new admin. Only callable by admin.
-    pub fn set_admin(env: &Env, admin: Address) {
-        // Check if admin is already set
-        if env.storage().instance().has(ADMIN_KEY) {
-            panic!("admin already set");
-        }
-        env.storage().instance().set(ADMIN_KEY, &admin);
+    /// Transfer administration to a new address. Only callable by the current admin.
+    pub fn set_admin(env: &Env, new_admin: Address) {
+        // Check the stored admin's authorization before replacing their address.
+        Self::require_admin(env);
+        env.storage().instance().set(ADMIN_KEY, &new_admin);
     }
 
     /// Private helper function to require auth from the admin
