@@ -20,5 +20,5 @@ soroban-sdk = { workspace = true }
 stellar-registry = { workspace = true }
 
 [dev-dependencies]
-stellar-xdr = { workspace = true, features = ["curr", "serde"] }
+stellar-xdr = { workspace = true, features = ["serde"] }
 soroban-sdk = { workspace = true, features = ["testutils"] }

@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod xlm {
-    use super::*;
     const XLM_KEY: &soroban_sdk::Symbol = &soroban_sdk::symbol_short!("XLM");
 
     pub fn contract_id(env: &soroban_sdk::Env) -> soroban_sdk::Address {
@@ -10,14 +9,8 @@ mod xlm {
             .expect("XLM contract not initialized. Please deploy the XLM contract first.")
     }
 
-    pub fn register(
-        env: &soroban_sdk::Env,
-        admin: &soroban_sdk::Address,
-    ) -> soroban_sdk::testutils::StellarAssetContract {
-        let sac = env.register_stellar_asset_contract_v2(admin.clone());
-        env.storage().instance().set(XLM_KEY, &sac.address());
-        stellar_asset_client(env).mint(admin, &to_stroops(10_000));
-        sac
+    pub fn set_contract_id(env: &soroban_sdk::Env, asset: &soroban_sdk::Address) {
+        env.storage().instance().set(XLM_KEY, asset);
     }
 
     #[allow(unused)]

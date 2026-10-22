@@ -1,5 +1,7 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, symbol_short, Address, BytesN, Env, Symbol};
+use soroban_sdk::{
+    contract, contractimpl, symbol_short, Address, BytesN, ContractExecutable, Env, Symbol,
+};
 
 mod error;
 mod xlm;
@@ -15,11 +17,22 @@ pub const ADMIN_KEY: &Symbol = &symbol_short!("ADMIN");
 #[contractimpl]
 impl GuessTheNumber {
     /// Constructor to initialize the contract with an admin and a random number
+    #[cfg(not(test))]
     pub fn __constructor(env: &Env, admin: Address) {
-        // Require auth from the admin to make the transfer
         admin.require_auth();
-        // This is for testing purposes. Ensures that the XLM contract set up for unit testing and local network
         xlm::register(env, &admin);
+        Self::initialize(env, admin);
+    }
+
+    // SDK test generators must run outside contract invocations.
+    #[cfg(test)]
+    pub fn __constructor(env: &Env, admin: Address, asset: Address) {
+        admin.require_auth();
+        xlm::set_contract_id(env, &asset);
+        Self::initialize(env, admin);
+    }
+
+    fn initialize(env: &Env, admin: Address) {
         // Send the contract an amount of XLM to play with
         xlm::token_client(env).transfer(
             &admin,
@@ -81,7 +94,7 @@ impl GuessTheNumber {
     /// Upgrade the contract to new wasm. Only callable by admin.
     pub fn upgrade(env: &Env, new_wasm_hash: BytesN<32>) {
         Self::require_admin(env);
-        env.deployer().update_current_contract_wasm(new_wasm_hash);
+        env.deployer().update_current_contract(ContractExecutable::Wasm(new_wasm_hash));
     }
 
     /// readonly function to get the current number

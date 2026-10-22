@@ -130,7 +130,9 @@ fn reset_and_guess() {
 fn generate_client<'a>(env: &Env, admin: &Address) -> GuessTheNumberClient<'a> {
     let contract_id = Address::generate(env);
     env.mock_all_auths();
-    let contract_id = env.register_at(&contract_id, GuessTheNumber, (admin,));
+    let sac = env.register_stellar_asset_contract_v2(admin.clone());
+    StellarAssetClient::new(env, &sac.address()).mint(admin, &xlm::to_stroops(10_000));
+    let contract_id = env.register_at(&contract_id, GuessTheNumber, (admin, sac.address()));
     env.set_auths(&[]); // clear auths
     GuessTheNumberClient::new(env, &contract_id)
 }
