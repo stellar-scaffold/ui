@@ -1,8 +1,20 @@
 <script lang="ts">
+	import { errorMessage } from "@stellar-scaffold/app-lib"
 	import { guessTheNumber } from "@stellar-scaffold/app-lib/clients"
 	import { address, signTransaction, updateBalances } from "../stores/wallet"
 
-	let result = $state<"idle" | "loading" | "success" | "failure">("idle")
+	let result = $state<"idle" | "loading" | "success" | "failure" | "error">(
+		"idle",
+	)
+	let error = $state<string>()
+
+	// Couldn't get an answer from the contract (rejected signature, network,
+	// simulation or contract error). Not the same as a wrong guess.
+	function fail(e: unknown) {
+		console.error(e)
+		error = errorMessage(e)
+		result = "error"
+	}
 
 	async function submitGuess(e: SubmitEvent) {
 		e.preventDefault()
@@ -28,14 +40,13 @@
 			const { result: txResult } = await tx.signAndSend({ signTransaction })
 
 			if (txResult.isErr()) {
-				console.error(txResult.unwrapErr())
+				fail(txResult.unwrapErr())
 			} else {
 				result = txResult.unwrap() ? "success" : "failure"
 				await updateBalances()
 			}
 		} catch (e) {
-			console.error(e)
-			result = "failure"
+			fail(e)
 		}
 	}
 
@@ -53,6 +64,7 @@
 			type="number"
 			min="1"
 			max="10"
+			required
 			onchange={reset}
 		/>
 		<button type="submit" disabled={result === "loading"}>Submit</button>
@@ -72,6 +84,11 @@
 			{:else}
 				<p>Incorrect guess. Try again!</p>
 			{/if}
+		</div>
+	{/if}
+	{#if result === "error"}
+		<div class="card guess-result guess-result--failure" role="alert">
+			<p>Couldn't submit your guess: {error}</p>
 		</div>
 	{/if}
 </div>

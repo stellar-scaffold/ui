@@ -1,3 +1,4 @@
+import { errorMessage } from "@stellar-scaffold/app-lib"
 import { guessTheNumber } from "@stellar-scaffold/app-lib/clients"
 import { useState } from "react"
 import { useWallet } from "../hooks/useWallet"
@@ -5,8 +6,17 @@ import { useWallet } from "../hooks/useWallet"
 export const GuessTheNumber = () => {
 	const { address, updateBalances, signTransaction } = useWallet()
 	const [result, setResult] = useState<
-		"idle" | "loading" | "success" | "failure"
+		"idle" | "loading" | "success" | "failure" | "error"
 	>("idle")
+	const [error, setError] = useState<string>()
+
+	// Couldn't get an answer from the contract (rejected signature, network,
+	// simulation or contract error). Not the same as a wrong guess.
+	const fail = (e: unknown) => {
+		console.error(e)
+		setError(errorMessage(e))
+		setResult("error")
+	}
 
 	const submitGuess = async (formData: FormData) => {
 		if (!address) {
@@ -31,14 +41,13 @@ export const GuessTheNumber = () => {
 			const { result } = await tx.signAndSend({ signTransaction })
 
 			if (result.isErr()) {
-				console.error(result.unwrapErr())
+				fail(result.unwrapErr())
 			} else {
 				setResult(result.unwrap() ? "success" : "failure")
 				await updateBalances()
 			}
 		} catch (e) {
-			console.error(e)
-			setResult("failure")
+			fail(e)
 		}
 	}
 
@@ -50,9 +59,11 @@ export const GuessTheNumber = () => {
 				<input
 					placeholder="Guess a number from 1 to 10!"
 					id="guess"
+					name="guess"
 					type="number"
 					min="1"
 					max="10"
+					required
 					onChange={reset}
 				/>
 				<button type="submit" disabled={result === "loading"}>
@@ -75,6 +86,11 @@ export const GuessTheNumber = () => {
 					) : (
 						<p>Incorrect guess. Try again!</p>
 					)}
+				</div>
+			)}
+			{result === "error" && (
+				<div className="card guess-result guess-result--failure" role="alert">
+					<p>Couldn&apos;t submit your guess: {error}</p>
 				</div>
 			)}
 		</div>

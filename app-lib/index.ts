@@ -4,7 +4,7 @@
 // stores, UI components) stays in each template.
 
 export * from "./env" // rpcUrl, networkPassphrase, allowHttp, stellarNetwork, network, labPrefix
-export * from "./format" // shortAddress, formatNetworkName, networkStatus, NetworkState
+export * from "./format" // shortAddress, formatNetworkName, networkStatus, NetworkState, errorMessage
 export * from "./friendbot" // getFriendbotUrl
 export * from "./subscription" // subscribeToEvents
 export * from "./wallet" // connectWallet, disconnectWallet, profileModal, signTransaction, onWalletChange, fetchBalances, wallet, MappedBalances, WalletState
