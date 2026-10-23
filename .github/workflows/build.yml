@@ -191,3 +191,6 @@ jobs:
       - name: Run cross-framework parity smoke tests
         run: npx playwright test tests/smoke.spec.ts
         working-directory: e2e
+      - name: Run Guess the Number tests
+        run: npx playwright test tests/guess-the-number.spec.ts
+        working-directory: e2e

@@ -72,3 +72,21 @@ export function networkStatus(
 	}
 	return { appNetwork, walletNetwork, state: "ok", title: "" }
 }
+
+/**
+ * A short, readable message for anything a wallet, RPC or contract call threw.
+ * Wallets reject with plain `{ code, message }` objects rather than `Error`s,
+ * and SDK errors can carry a long event log after the first line, so this
+ * keeps only the first line of whichever message it finds.
+ */
+export const errorMessage = (error: unknown): string => {
+	const message =
+		typeof error === "object" &&
+		error !== null &&
+		"message" in error &&
+		typeof error.message === "string"
+			? error.message
+			: String(error)
+	const [firstLine = ""] = message.split("\n")
+	return firstLine.trim() || "Unknown error"
+}
