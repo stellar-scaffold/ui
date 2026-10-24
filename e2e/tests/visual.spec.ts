@@ -1,9 +1,12 @@
 import { test, expect } from "@playwright/test"
 
-// Visual guard for the styles centralization. Per-project baselines (one per
-// framework) are committed; the smoke specs assert behavior, these assert
-// appearance. During the styles refactor an intended change shows up as a diff
+// Visual guard for the styles centralization. Saves png snapshots of current
+// UI and compares against previous run's png.
+//
+// During a style refactor an intended change shows up as a diff
 // to review + re-baseline (`--update-snapshots`); an unintended one fails.
+//
+// First run fails, generating an initial png.
 
 test("home page visual", async ({ page }) => {
 	await page.goto("/")

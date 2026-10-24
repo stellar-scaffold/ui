@@ -1,10 +1,5 @@
 import { test, expect } from "@playwright/test"
 
-// UI-smoke parity: framework-agnostic assertions that must hold for every
-// target (each framework template in the monorepo, or the single `app/` after
-// init). These guard the shared-util/component/style refactor against dropped
-// features and broken imports — no chain or wallet interaction required.
-
 test("home page mounts", async ({ page }) => {
 	const response = await page.goto("/")
 	expect(response?.ok()).toBeTruthy()

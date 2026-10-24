@@ -3,15 +3,6 @@ import { Keypair, xdr } from "@stellar/stellar-sdk"
 import { connectFakeFreighter, DECLINED } from "../util/fake-freighter"
 import { CONTRACT_ERROR, stubRpc } from "../util/stub-rpc"
 
-// Guess the Number, from typing a guess to the result the player sees. The
-// wallet and the RPC are stand-ins (see `../util`), so these run the same
-// against every target and network with no chain, extension or funded account.
-//
-// Regression guard for stellar-scaffold/ui#285: a guess must reach the
-// contract call and the wallet, the contract's answer must reach the player,
-// and a failure along the way (declined signature, simulation or contract
-// error) must not read as a wrong guess.
-
 const guesser = Keypair.random()
 const INCORRECT = "Incorrect guess. Try again!"
 const CORRECT = "You got it!"

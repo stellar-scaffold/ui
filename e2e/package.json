@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Playwright UI-smoke parity tests run against every framework template.",
+  "description": "Playwright e2e UI tests",
   "scripts": {
     "test": "playwright test"
   },
