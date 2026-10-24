@@ -3,21 +3,25 @@ import { existsSync, readdirSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
-// Self-adapting target list, so the same suite works in both lifecycle states
-// without `init` having to rewrite this file:
-//   - Post-init (user project): only the instantiated `app/` exists → 1 target.
-//   - Contributor view (UI monorepo): one target per `templates/<framework>/`.
-// The shared, framework-agnostic specs then run against whichever targets exist,
-// which is what enforces feature parity between templates.
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 
 type Target = { name: string; cwd: string; port: number }
 
+// These tests run in both a generated Scaffold project (which has an `app`
+// dir) and in the Scaffold UI monorepo (which has a `templates` dir). They are
+// how the Scaffold team maintains parity and behavior for all of their
+// templates, and they are also useful as a starting point for app developers
+// who use Scaffold to initialize projects.
+//
+// If you used Scaffold to generate this project, feel free to simplify this
+// function to remove the `templates` logic.
 function resolveTargets(): Target[] {
+	// generated Scaffold project
 	const appDir = resolve(repoRoot, "app")
 	if (existsSync(appDir)) {
 		return [{ name: "app", cwd: appDir, port: 5180 }]
 	}
+	// the Scaffold UI monorepo (feel free to remove)
 	const templatesDir = resolve(repoRoot, "templates")
 	const frameworks = existsSync(templatesDir)
 		? readdirSync(templatesDir, { withFileTypes: true })
