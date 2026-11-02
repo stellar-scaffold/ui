@@ -756,6 +756,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "heapless"
+version = "0.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "25ba4bd83f9415b58b4ed8dc5714c76e626a105be4646c02630ad730ad3b5aa4"
+dependencies = [
+ "hash32",
+ "stable_deref_trait",
+ "zeroize",
+]
+
+[[package]]
 name = "heck"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1548,26 +1559,25 @@ dependencies = [
 
 [[package]]
 name = "stellar-registry"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f0f3bf39972776a5f538090604589e0dbd5c483c24ba1ca2ee10b3ca094c907"
+checksum = "e6b98aa78076a5727fee482732938e54c87da69428c283d5203d974ed71c3e18"
 dependencies = [
  "stellar-registry-macro",
 ]
 
 [[package]]
 name = "stellar-registry-macro"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b5a33aefbd6f51ec5135369fca2746c7ecd59205f58f24badc195ce49952409"
+checksum = "1b5dc0bdbd48f99c253a65a95848215bb3099ed191194c14f8a3639824dab9f5"
 dependencies = [
  "proc-macro2",
  "quote",
- "sha2",
  "stellar-build",
  "stellar-registry-name",
- "stellar-strkey 0.0.16",
- "stellar-xdr 27.0.0",
+ "stellar-strkey 0.0.18",
+ "stellar-xdr 30.0.0",
  "syn 2.0.101",
 ]
 
@@ -1599,7 +1609,31 @@ checksum = "084afcb0d458c3d5d5baa2d294b18f881e62cc258ef539d8fdf68be7dbe45520"
 dependencies = [
  "crate-git-revision 0.0.6",
  "data-encoding",
- "heapless",
+ "heapless 0.8.0",
+]
+
+[[package]]
+name = "stellar-strkey"
+version = "0.0.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f34ff61c0ca6f1c2b4169e8d1633417bd9225f58b6175e4e317204565d16277"
+dependencies = [
+ "crate-git-revision 0.0.9",
+ "data-encoding",
+ "heapless 0.9.3",
+ "zeroize",
+]
+
+[[package]]
+name = "stellar-strkey"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5038ed2bf4e11842210d118f65791d8ca4747622daddd222338b3d06b6051bc1"
+dependencies = [
+ "crate-git-revision 0.0.9",
+ "data-encoding",
+ "heapless 0.9.3",
+ "zeroize",
 ]
 
 [[package]]
@@ -1611,20 +1645,6 @@ dependencies = [
  "soroban-sdk",
  "stellar-contract-utils",
  "stellar-governance",
-]
-
-[[package]]
-name = "stellar-xdr"
-version = "27.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05ff843326969bdf1ef673dcdba94c08f4a3c8f1e58d6e6ef39b1bd4f749179a"
-dependencies = [
- "crate-git-revision 0.0.6",
- "escape-bytes",
- "ethnum",
- "hex",
- "sha2",
- "stellar-strkey 0.0.13",
 ]
 
 [[package]]
@@ -1644,6 +1664,20 @@ dependencies = [
  "serde_with",
  "sha2",
  "stellar-strkey 0.0.13",
+]
+
+[[package]]
+name = "stellar-xdr"
+version = "30.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56f2fb2008b42fc746c0f6b46e375600068dd91f07748e9f1737c6341a2255f2"
+dependencies = [
+ "crate-git-revision 0.0.9",
+ "escape-bytes",
+ "ethnum",
+ "hex",
+ "sha2",
+ "stellar-strkey 1.0.0",
 ]
 
 [[package]]
