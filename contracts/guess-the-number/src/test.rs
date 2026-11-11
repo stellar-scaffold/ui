@@ -8,6 +8,7 @@ use soroban_sdk::{
     testutils::{Address as _, MockAuth, MockAuthInvoke},
     token::{StellarAssetClient, TokenClient},
 };
+use stellar_registry::testutils::register_import;
 
 fn init_test<'a>(env: &'a Env) -> (Address, StellarAssetClient<'a>, GuessTheNumberClient<'a>) {
     let admin = Address::generate(env);
@@ -16,9 +17,9 @@ fn init_test<'a>(env: &'a Env) -> (Address, StellarAssetClient<'a>, GuessTheNumb
     env.mock_all_auths();
     let contract_id = env.register(GuessTheNumber, (&admin,));
     let client = GuessTheNumberClient::new(env, &contract_id);
-    // Create the asset outside contract invocations, after the game exists.
-    let asset = xlm::register(env, &admin, &contract_id);
-    let sac = StellarAssetClient::new(env, &asset.address());
+    // Put a mintable test asset at the address `import_asset!("xlm")` resolves to.
+    let asset = register_import!(env, xlm);
+    let sac = StellarAssetClient::new(env, &asset);
     // Mint a starting balance for the admin. On testnet, use Friendbot instead.
     sac.mint(&admin, &xlm::to_stroops(10_000));
     // Clear setup's auth mocks so each test chooses what to authorize.
@@ -188,7 +189,7 @@ fn reset_without_funds_does_not_change_round() {
 // Authorize reset and its nested transfer, rather than mocking every caller.
 fn set_caller(client: &GuessTheNumberClient, caller: &Address) {
     let env = &client.env;
-    let asset = env.as_contract(&client.address, || xlm::contract_id(env));
+    let asset = xlm::contract_id(env);
     env.mock_auths(&[MockAuth {
         address: caller,
         invoke: &MockAuthInvoke {

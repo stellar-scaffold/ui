@@ -1518,9 +1518,9 @@ dependencies = [
 
 [[package]]
 name = "stellar-build"
-version = "0.0.6"
+version = "0.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97fd5e3be902a9658fb9f642d4eef7837ab1d51e52dde9be1d9b218326499d97"
+checksum = "915a3455d5ef6013227e3ba69e7fd966c0830c4620f84c06b1dc684cae3a9465"
 dependencies = [
  "cargo_metadata",
  "sha2",
@@ -1559,26 +1559,27 @@ dependencies = [
 
 [[package]]
 name = "stellar-registry"
-version = "0.1.2"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6b98aa78076a5727fee482732938e54c87da69428c283d5203d974ed71c3e18"
+checksum = "9a6ef5b2abed78ae92d9f5f6481c87f7d7c20bebdfe759c9d18d27a3b0daa92a"
 dependencies = [
  "stellar-registry-macro",
 ]
 
 [[package]]
 name = "stellar-registry-macro"
-version = "0.1.2"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b5dc0bdbd48f99c253a65a95848215bb3099ed191194c14f8a3639824dab9f5"
+checksum = "97e50129dd0615302ff31a0ad0f4d86d75a9e25a66b07ae8cd33d63b000bc314"
 dependencies = [
  "proc-macro2",
  "quote",
+ "soroban-spec",
  "stellar-build",
  "stellar-registry-name",
  "stellar-strkey 0.0.18",
  "stellar-xdr 30.0.0",
- "syn 2.0.101",
+ "syn 3.0.3",
 ]
 
 [[package]]
