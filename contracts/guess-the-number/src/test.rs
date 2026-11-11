@@ -17,7 +17,7 @@ fn init_test<'a>(env: &'a Env) -> (Address, StellarAssetClient<'a>, GuessTheNumb
     env.mock_all_auths();
     let contract_id = env.register(GuessTheNumber, (&admin,));
     let client = GuessTheNumberClient::new(env, &contract_id);
-    // Put a mintable test asset at the address `import_contract!(env, xlm)` uses.
+    // Put a mintable test asset at the address `import_asset!("xlm")` resolves to.
     let asset = register_import!(env, xlm);
     let sac = StellarAssetClient::new(env, &asset);
     // Mint a starting balance for the admin. On testnet, use Friendbot instead.
