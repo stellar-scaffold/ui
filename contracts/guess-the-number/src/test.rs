@@ -189,7 +189,7 @@ fn reset_without_funds_does_not_change_round() {
 // Authorize reset and its nested transfer, rather than mocking every caller.
 fn set_caller(client: &GuessTheNumberClient, caller: &Address) {
     let env = &client.env;
-    let asset = xlm::token_client(env).address;
+    let asset = xlm::contract_id(env);
     env.mock_auths(&[MockAuth {
         address: caller,
         invoke: &MockAuthInvoke {

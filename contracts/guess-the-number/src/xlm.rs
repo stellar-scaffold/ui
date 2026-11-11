@@ -4,10 +4,10 @@ pub const fn to_stroops(num: u64) -> i128 {
     (num as i128) * ONE_XLM
 }
 
-/// Client for the network's native XLM asset contract.
-pub fn token_client<'a>(env: &soroban_sdk::Env) -> soroban_sdk::token::TokenClient<'a> {
-    stellar_registry::import_contract!(env, xlm)
-}
+// Resolve the network's XLM contract; tests put a test asset at the same address.
+stellar_registry::import_asset!("xlm");
+
+pub use xlm::*;
 
 /// Ensure the native XLM asset contract exists before funding a round.
 pub fn register(env: &soroban_sdk::Env) {
