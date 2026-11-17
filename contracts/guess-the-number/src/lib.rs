@@ -29,9 +29,7 @@ impl GuessTheNumber {
         let admin = Self::admin(env).expect("admin not set");
         // Only the admin can reset the game and authorize spending their XLM.
         admin.require_auth();
-        // Ensure the XLM contract exists on the network. Unit tests create
-        // their own asset in test setup, outside contract invocations.
-        #[cfg(not(test))]
+        // Ensure the XLM contract exists on the network.
         xlm::register(env);
         // Seed the pot with 1 XLM from the admin for players to win.
         xlm::token_client(env).transfer(
